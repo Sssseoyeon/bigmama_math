@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import date
+from datetime import date, datetime
 from backend.database import get_db
 from backend.models import Attendance, Student
 from backend.schemas import AttendanceCreate, AttendanceResponse
@@ -61,6 +61,51 @@ def get_today_absent_students(db: Session = Depends(get_db)):
     ]
 
 
+@router.get("/today")
+def get_today_attendance(db: Session = Depends(get_db)):
+    today = date.today()
+    now = datetime.now().time()
+
+    students = db.query(Student).all()
+    result = []
+
+    present = late_or_absent = unchecked = 0
+
+    for student in students:
+        attendance = db.query(Attendance).filter(
+            Attendance.student_id == student.id,
+            Attendance.date == today
+        ).first()
+
+        if attendance and attendance.check_in:
+            status = "present"
+            present += 1
+        else:
+            if now >= student.expected_time:
+                status = "late_or_absent"
+                late_or_absent += 1
+            else:
+                status = "unchecked"
+                unchecked += 1
+
+        result.append({
+            "student_id": student.id,
+            "name": student.name,
+            "expected_time": student.expected_time,
+            "check_in": attendance.check_in if attendance else None,
+            "status": status
+        })
+
+    return {
+        "date": today,
+        "now": now,
+        "summary": {
+            "present": present,
+            "late_or_absent": late_or_absent,
+            "unchecked": unchecked
+        },
+        "students": result
+    }
 
 
 @router.post("/", response_model=AttendanceResponse)

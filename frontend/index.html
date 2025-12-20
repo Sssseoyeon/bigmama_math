@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>오늘 출석 현황</title>
+</head>
+<body>
+  <h1>📅 오늘 출석 현황</h1>
+
+  <button onclick="loadAttendance()">새로고침</button>
+
+  <h2>요약</h2>
+  <ul>
+    <li>출석: <span id="present">0</span></li>
+    <li>지각/결석: <span id="late">0</span></li>
+    <li>미체크: <span id="unchecked">0</span></li>
+  </ul>
+
+  <h2>학생 목록</h2>
+  <table border="1" cellpadding="6">
+    <thead>
+      <tr>
+        <th>이름</th>
+        <th>예정 시간</th>
+        <th>입실 시간</th>
+        <th>상태</th>
+      </tr>
+    </thead>
+    <tbody id="students"></tbody>
+  </table>
+
+  <script>
+    async function loadAttendance() {
+      const res = await fetch("http://127.0.0.1:8000/attendance/today");
+      const data = await res.json();
+
+      document.getElementById("present").innerText = data.summary.present;
+      document.getElementById("late").innerText = data.summary.late_or_absent;
+      document.getElementById("unchecked").innerText = data.summary.unchecked;
+
+      const tbody = document.getElementById("students");
+      tbody.innerHTML = "";
+
+      data.students.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.name}</td>
+          <td>${s.expected_time ?? "-"}</td>
+          <td>${s.check_in ?? "-"}</td>
+          <td>${s.status}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    loadAttendance();
+  </script>
+</body>
+</html>

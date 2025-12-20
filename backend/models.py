@@ -8,6 +8,8 @@ class Student(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     parent_phone = Column(String, nullable=False)
+    grade = Column(String, nullable=False)
+    expected_time = Column(Time, nullable=True)
 
 class Attendance(Base):
     __tablename__ = "attendance"

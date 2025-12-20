@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -29,6 +29,9 @@ def update_student(
         db_student.name = student.name
     if student.parent_phone is not None:
         db_student.parent_phone = student.parent_phone
+    if student.expected_time is not None:
+        db_student.expected_time = student.expected_time
+
 
     db.commit()
     db.refresh(db_student)
