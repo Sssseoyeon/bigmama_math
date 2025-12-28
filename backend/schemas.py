@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import date, time
-from typing import Optional
+from typing import List, Optional
 
 # --------------------
 # 학생 관련
@@ -8,21 +8,31 @@ from typing import Optional
 
 class StudentCreate(BaseModel):
     name: str
-    parent_phone: str
     grade: str
-    expected_time: time
+    parent_phone: Optional[str] = None
 
 class StudentUpdate(BaseModel):
     name: Optional[str] = None
-    parent_phone: Optional[str] = None
     grade: Optional[str] = None
-    expected_time: Optional[time] = None
+    parent_phone: Optional[str] = None
 
 class StudentResponse(BaseModel):
     id: int
     name: str
-    parent_phone: str
     grade: str
+    parent_phone: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class StudentScheduleCreate(BaseModel):
+    weekday: int
+    expected_time: time
+
+
+class StudentScheduleResponse(BaseModel):
+    id: int
+    weekday: int
     expected_time: time
 
     class Config:
@@ -50,3 +60,44 @@ class AttendanceResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# --------------------
+# 학생 일지
+# --------------------
+class DailyTaskCreate(BaseModel):
+    content: str
+
+class DailyLogCreate(BaseModel):
+    student_id: int
+    date: date
+    tasks: List[DailyTaskCreate]
+    teacher_note: Optional[str] = None
+    
+
+class DailyLogResponse(BaseModel):
+    id: int
+    student_id: int
+    date: date
+    tasks: List[DailyTaskResponse]
+    teacher_note: Optional[str]
+    is_completed: bool
+
+    class Config:
+        from_attributes = True
+
+
+class DailyTaskResponse(DailyTaskCreate):
+    id: int
+    content: str
+    grading_done: bool
+    review_done: bool
+    is_done: bool
+
+    class Config:
+        from_attributes = True
+
+
+class DailyTaskUpdate(BaseModel):
+    grading_done: Optional[bool] = None
+    review_done: Optional[bool] = None

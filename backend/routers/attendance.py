@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import date, datetime
-from backend.database import get_db
-from backend.models import Attendance, Student
-from backend.schemas import AttendanceCreate, AttendanceResponse
-from backend.utils.sms import send_sms
 
+from backend.database import get_db
+from backend.models import Attendance, Student, StudentSchedule
+from backend.schemas import AttendanceCreate, AttendanceResponse
 
 router = APIRouter(prefix="/attendance", tags=["Attendance"])
 
+
+# -------------------------
+# 학생별 출석 기록
+# -------------------------
 @router.get("/student/{student_id}", response_model=list[AttendanceResponse])
 def get_attendance_by_student(student_id: int, db: Session = Depends(get_db)):
     return (
@@ -18,53 +21,56 @@ def get_attendance_by_student(student_id: int, db: Session = Depends(get_db)):
         .all()
     )
 
-@router.get("/date/{target_date}", response_model=list[AttendanceResponse])
-def get_attendance_by_date(target_date: date, db: Session = Depends(get_db)):
-    return (
-        db.query(Attendance)
-        .filter(Attendance.date == target_date)
-        .all()
-    )
 
+# -------------------------
+# 오늘 아직 안 온 학생 (문자 대상)
+# -------------------------
 @router.get("/absent/today")
 def get_today_absent_students(db: Session = Depends(get_db)):
     today = date.today()
+    now = datetime.now().time()
+    weekday = today.weekday()
 
-    # 오늘 출석 기록이 있는 학생 id
-    present_student_ids = (
-        db.query(Attendance.student_id)
-        .filter(Attendance.date == today, Attendance.status == "present")
-        .subquery()
-    )
+    result = []
 
-    # 오늘 결석 처리된 학생
-    absent_records = (
-        db.query(Student)
-        .outerjoin(
-            Attendance,
-            (Attendance.student_id == Student.id) &
-            (Attendance.date == today)
-        )
-        .filter(
-            (Attendance.status == "absent") | (Attendance.id == None)
-        )
-        .all()
-    )
+    students = db.query(Student).all()
 
-    return [
-        {
-            "student_id": s.id,
-            "name": s.name,
-            "message": f"[학원 알림] {s.name} 학생이 오늘 출석하지 않았습니다."
-        }
-        for s in absent_records
-    ]
+    for student in students:
+        # 오늘 요일 스케줄
+        schedule = db.query(StudentSchedule).filter(
+            StudentSchedule.student_id == student.id,
+            StudentSchedule.weekday == weekday
+        ).first()
+
+        if not schedule:
+            continue  # 오늘 안 오는 학생
+
+        attendance = db.query(Attendance).filter(
+            Attendance.student_id == student.id,
+            Attendance.date == today
+        ).first()
+
+        if attendance and attendance.check_in:
+            continue  # 이미 출석
+
+        if now >= schedule.expected_time:
+            result.append({
+                "student_id": student.id,
+                "name": student.name,
+                "parent_phone": student.parent_phone
+            })
+
+    return result
 
 
+# -------------------------
+# 오늘 출석 현황
+# -------------------------
 @router.get("/today")
 def get_today_attendance(db: Session = Depends(get_db)):
     today = date.today()
     now = datetime.now().time()
+    weekday = today.weekday()
 
     students = db.query(Student).all()
     result = []
@@ -77,21 +83,27 @@ def get_today_attendance(db: Session = Depends(get_db)):
             Attendance.date == today
         ).first()
 
+        schedule = db.query(StudentSchedule).filter(
+            StudentSchedule.student_id == student.id,
+            StudentSchedule.weekday == weekday
+        ).first()
+
         if attendance and attendance.check_in:
             status = "present"
             present += 1
+
+        elif schedule and now >= schedule.expected_time:
+            status = "late_or_absent"
+            late_or_absent += 1
+
         else:
-            if now >= student.expected_time:
-                status = "late_or_absent"
-                late_or_absent += 1
-            else:
-                status = "unchecked"
-                unchecked += 1
+            status = "unchecked"
+            unchecked += 1
 
         result.append({
             "student_id": student.id,
             "name": student.name,
-            "expected_time": student.expected_time,
+            "expected_time": schedule.expected_time if schedule else None,
             "check_in": attendance.check_in if attendance else None,
             "status": status
         })
@@ -108,6 +120,9 @@ def get_today_attendance(db: Session = Depends(get_db)):
     }
 
 
+# -------------------------
+# 출석 저장
+# -------------------------
 @router.post("/", response_model=AttendanceResponse)
 def create_or_update_attendance(
     attendance: AttendanceCreate,
@@ -128,36 +143,4 @@ def create_or_update_attendance(
 
     db.commit()
     db.refresh(record)
-
-    # 결석 시 문자 발송 로그 (지금은 콘솔)
-    if attendance.status == "absent":
-        print(f"[문자 예정] 학생 {attendance.student_id} 결석")
-
     return record
-
-
-@router.post("/absent/today/send-sms")
-def send_absent_sms(db: Session = Depends(get_db)):
-    today = date.today()
-
-    absent_students = (
-        db.query(Student)
-        .outerjoin(
-            Attendance,
-            (Attendance.student_id == Student.id) &
-            (Attendance.date == today)
-        )
-        .filter(
-            (Attendance.status == "absent") | (Attendance.id == None)
-        )
-        .all()
-    )
-
-    for s in absent_students:
-        message = f"[학원 알림] {s.name} 학생이 오늘 출석하지 않았습니다."
-        send_sms(s.parent_phone, message)  # 나중에 학부모 번호로 교체
-
-    return {
-        "count": len(absent_students),
-        "result": "문자 발송 완료 (콘솔 로그)"
-    }

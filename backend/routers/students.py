@@ -3,17 +3,14 @@ from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.models import Student
-from backend.schemas import (
-    StudentCreate,
-    StudentResponse,
-    StudentUpdate
-)
+from backend.schemas import StudentCreate, StudentResponse, StudentUpdate
 
 router = APIRouter(
     prefix="/students",
     tags=["Students"]
 )
 
+# 학생 수정
 @router.put("/{student_id}", response_model=StudentResponse)
 def update_student(
     student_id: int,
@@ -27,11 +24,10 @@ def update_student(
 
     if student.name is not None:
         db_student.name = student.name
+    if student.grade is not None:
+        db_student.grade = student.grade
     if student.parent_phone is not None:
         db_student.parent_phone = student.parent_phone
-    if student.expected_time is not None:
-        db_student.expected_time = student.expected_time
-
 
     db.commit()
     db.refresh(db_student)

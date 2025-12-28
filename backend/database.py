@@ -20,7 +20,6 @@ SessionLocal = sessionmaker(
 # 모델들이 상속받을 Base
 Base = declarative_base()
 
-# ⭐ 이게 없어서 에러 난 거임
 def get_db():
     db = SessionLocal()
     try:

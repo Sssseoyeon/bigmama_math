@@ -1,59 +1,601 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>오늘 출석 현황</title>
+<meta charset="UTF-8" />
+<title>학원 관리자 테스트 페이지</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+.container {
+    display: flex;
+    gap: 30px;
+}
+.panel {
+    width: 33%;
+    border-right: 1px solid #ddd;
+    padding-right: 15px;
+}
+.panel:last-child {
+    border-right: none;
+}
+input, textarea, select, button {
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 6px;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    padding: 6px;
+    cursor: pointer;
+}
+li:hover {
+    background: #f0f0f0;
+}
+.selected {
+    background: #dbeafe;
+}
+.status-present { color: green; }
+.status-absent { color: red; }
+.status-unchecked { color: gray; }
+
+/* ===== 공유 모달 ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    position: relative;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.close {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+.share-image {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.hint {
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+}
+</style>
 </head>
+
 <body>
-  <h1>📅 오늘 출석 현황</h1>
 
-  <button onclick="loadAttendance()">새로고침</button>
+<h1>📋 관리자 통합 테스트 페이지</h1>
 
-  <h2>요약</h2>
-  <ul>
-    <li>출석: <span id="present">0</span></li>
-    <li>지각/결석: <span id="late">0</span></li>
-    <li>미체크: <span id="unchecked">0</span></li>
-  </ul>
+<div class="container">
 
-  <h2>학생 목록</h2>
-  <table border="1" cellpadding="6">
-    <thead>
-      <tr>
-        <th>이름</th>
-        <th>예정 시간</th>
-        <th>입실 시간</th>
-        <th>상태</th>
-      </tr>
-    </thead>
-    <tbody id="students"></tbody>
-  </table>
+<!-- =========================
+     학생 관리
+     ========================= -->
+<div class="panel">
+<h3>👩‍🎓 학생 관리</h3>
 
-  <script>
-    async function loadAttendance() {
-      const res = await fetch("http://127.0.0.1:8000/attendance/today");
-      const data = await res.json();
+<input id="studentName" placeholder="이름" />
+<input id="studentGrade" placeholder="학년 (예: 중2)" />
+<button onclick="createStudent()">학생 등록</button>
 
-      document.getElementById("present").innerText = data.summary.present;
-      document.getElementById("late").innerText = data.summary.late_or_absent;
-      document.getElementById("unchecked").innerText = data.summary.unchecked;
+<hr />
+<ul id="studentList"></ul>
+</div>
 
-      const tbody = document.getElementById("students");
-      tbody.innerHTML = "";
+<!-- =========================
+     출석 관리
+     ========================= -->
+<div class="panel">
+<h3>🕒 출석 관리 (오늘)</h3>
 
-      data.students.forEach(s => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${s.name}</td>
-          <td>${s.expected_time ?? "-"}</td>
-          <td>${s.check_in ?? "-"}</td>
-          <td>${s.status}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+<p id="attendanceStudentText">학생 선택 필요</p>
+
+<select id="attendanceStatus">
+    <option value="present">출석</option>
+    <option value="absent">결석</option>
+</select>
+
+<input id="checkIn" type="time" />
+<input id="checkOut" type="time" />
+
+<button onclick="submitAttendance()">출석 저장</button>
+
+<hr />
+<h4>📊 오늘 출석 현황</h4>
+<ul id="attendanceList"></ul>
+</div>
+
+<!-- =========================
+     일지 관리
+     ========================= -->
+<div class="panel">
+<h3>📘 일지 관리</h3>
+
+<p id="logStudentText">학생 선택 필요</p>
+
+<input id="logDate" type="date" />
+<textarea id="tasksInput" placeholder="할 일 (한 줄에 하나)"></textarea>
+<textarea id="teacherNote" placeholder="선생님 메모"></textarea>
+
+<button onclick="createDailyLog()">일지 저장</button>
+
+<hr />
+<ul id="logList"></ul>
+</div>
+
+<!-- =========================
+     요일별 등원 시간 관리
+     ========================= -->
+<div class="panel">
+<h3>📅 요일별 등원 시간</h3>
+<ul id="scheduleList"></ul>
+</div>
+
+
+<!-- =========================
+     미출석 학생 관리
+     ========================= -->
+<div class="panel">
+<h3>🚨 아직 안 온 학생</h3>
+
+<button onclick="loadAbsentStudents()">새로고침</button>
+<button onclick="sendSelectedSMS()">선택 문자 발송</button>
+
+<hr />
+<ul id="absentList"></ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+let selectedStudent = null;
+
+const WEEKDAYS = [
+  { value: 0, label: "월" },
+  { value: 1, label: "화" },
+  { value: 2, label: "수" },
+  { value: 3, label: "목" },
+  { value: 4, label: "금" },
+  { value: 5, label: "토" },
+  { value: 6, label: "일" }
+];
+
+// =========================
+// 학생 목록
+// =========================
+async function loadStudents() {
+    const res = await fetch(`${API}/students/`);
+    const students = await res.json();
+    const list = document.getElementById("studentList");
+    list.innerHTML = "";
+
+    students.forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = `${s.name} (${s.grade})`;
+        li.onclick = () => selectStudent(s, li);
+        list.appendChild(li);
+    });
+}
+
+// =========================
+// 학생 선택
+// =========================
+function selectStudent(student, li) {
+    selectedStudent = student;
+
+    document.querySelectorAll("li").forEach(x =>
+        x.classList.remove("selected"));
+    li.classList.add("selected");
+
+    document.getElementById("attendanceStudentText")
+        .textContent = `선택: ${student.name}`;
+    document.getElementById("logStudentText")
+        .textContent = `선택: ${student.name}`;
+
+    loadAttendanceToday();
+    loadDailyLogs();
+    loadStudentSchedules();
+}
+
+// =========================
+// 학생 생성
+// =========================
+async function createStudent() {
+    await fetch(`${API}/students/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: studentName.value,
+            grade: studentGrade.value
+        })
+    });
+    loadStudents();
+}
+
+// =========================
+// 출석 저장
+// =========================
+async function submitAttendance() {
+    if (!selectedStudent) {
+        return alert("학생 선택");
     }
 
-    loadAttendance();
-  </script>
+    // ✅ payload 먼저 만든다
+    const payload = {
+        student_id: selectedStudent.id,
+        date: new Date().toISOString().slice(0, 10),
+        status: attendanceStatus.value,
+        check_in: checkIn.value || null
+    };
+
+    // ✅ 퇴실 시간 입력했을 때만 추가
+    if (checkOut.value) {
+        payload.check_out = checkOut.value;
+    }
+
+    // ✅ fetch는 한 번만
+    await fetch(`${API}/attendance/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    await loadAttendanceToday();
+}
+
+// =========================
+// 오늘 출석 현황
+// =========================
+async function loadAttendanceToday() {
+    const res = await fetch(`${API}/attendance/today`);
+    const data = await res.json();
+    const list = document.getElementById("attendanceList");
+    list.innerHTML = "";
+
+    data.students.forEach(s => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            ${s.name} -
+            <span class="status-${s.status}">
+                ${s.status}
+            </span>
+        `;
+        list.appendChild(li);
+    });
+}
+
+// =========================
+// 일지 생성
+// =========================
+async function createDailyLog() {
+    if (!selectedStudent) return alert("학생 선택");
+
+    const tasks = tasksInput.value
+        .split("\n")
+        .map(t => t.trim())
+        .filter(t => t !== "")
+        .map(t => ({
+            content: t,
+        }));
+
+    await fetch(`${API}/daily-logs/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            student_id: selectedStudent.id,
+            date: logDate.value,
+            tasks: tasks,
+            teacher_note: teacherNote.value
+        })
+    });
+
+    loadDailyLogs();
+}
+
+
+// =========================
+// 일지 조회
+// =========================
+async function loadDailyLogs() {
+    const res = await fetch(
+        `${API}/daily-logs/student/${selectedStudent.id}`
+    );
+    const logs = await res.json();
+    const list = document.getElementById("logList");
+    list.innerHTML = "";
+
+    logs.forEach(log => {
+        const li = document.createElement("li");
+
+        const tasksHtml = log.tasks.map(t => `
+            <li>
+                <label>
+                    <input
+                        type="checkbox"
+                        ${t.grading_done ? "checked" : ""}
+                        onchange="updateTask(${t.id}, 'grading_done', this.checked)"
+                    />
+                    채점
+                </label>
+
+                <label style="margin-left:10px;">
+                    <input
+                        type="checkbox"
+                        ${t.review_done ? "checked" : ""}
+                        onchange="updateTask(${t.id}, 'review_done', this.checked)"
+                    />
+                    오답
+                </label>
+
+                <strong style="margin-left:10px;">
+                    ${t.is_done ? "✅ 완료" : ""}
+                </strong>
+
+                <br/>
+                ${t.content}
+            </li>
+        `).join("");
+
+        li.innerHTML = `
+            <strong>${log.date}</strong>
+            <ul>${tasksHtml}</ul>
+            메모: ${log.teacher_note || ""}
+
+            <br/><br/>
+            <button onclick="shareKakao(${log.id})">
+              📤 학부모에게 공유
+            </button>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+
+async function updateTask(taskId, field, value) {
+    await fetch(`${API}/daily-tasks/${taskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            [field]: value
+        })
+    });
+
+    loadDailyLogs();
+}
+
+// =========================
+// 미출석 학생 조회
+// =========================
+let absentStudents = [];
+
+async function loadAbsentStudents() {
+    const res = await fetch(`${API}/attendance/absent/today`);
+    const data = await res.json();
+
+    absentStudents = data;
+
+    const list = document.getElementById("absentList");
+    list.innerHTML = "";
+
+    if (data.length === 0) {
+        list.innerHTML = "<li>🎉 모두 출석 완료</li>";
+        return;
+    }
+
+    data.forEach(s => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <label>
+                <input type="checkbox" data-id="${s.student_id}" />
+                ${s.name}
+            </label>
+        `;
+        list.appendChild(li);
+    });
+}
+
+function sendSelectedSMS() {
+    const checked = document.querySelectorAll(
+        "#absentList input[type=checkbox]:checked"
+    );
+
+    if (checked.length === 0) {
+        alert("선택된 학생이 없습니다.");
+        return;
+    }
+
+    const names = [];
+
+    checked.forEach(cb => {
+        const student = absentStudents.find(
+            s => s.student_id == cb.dataset.id
+        );
+        if (student) {
+            names.push(student.name);
+            console.log(
+                `[문자 발송] ${student.name} 학부모에게 문자 전송`
+            );
+        }
+    });
+
+    alert(
+        `문자 발송 완료 (임시)\n\n대상:\n- ${names.join("\n- ")}`
+    );
+}
+
+// =========================
+// 요일별 등원 시간 저장
+// =========================S
+async function loadStudentSchedules() {
+    const res = await fetch(
+        `${API}/students/${selectedStudent.id}/schedules/`
+    );
+    const schedules = await res.json();
+
+    const map = {};
+    schedules.forEach(s => {
+        map[s.weekday] = s.expected_time;
+    });
+
+    const list = document.getElementById("scheduleList");
+    list.innerHTML = "";
+
+    WEEKDAYS.forEach(d => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <label>
+                ${d.label}요일
+                <input
+                    type="time"
+                    value="${map[d.value] || ""}"
+                    onchange="saveSchedule(${d.value}, this.value)"
+                />
+            </label>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+
+// 저장
+async function saveSchedule(weekday, time) {
+    if (!time || !selectedStudent) return;
+
+    await fetch(
+        `${API}/students/${selectedStudent.id}/schedules/`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                weekday: weekday,
+                expected_time: time
+            })
+        }
+    );
+}
+
+
+let currentShareUrl = null;
+
+async function shareKakao(logId) {
+    // 1️⃣ 최신 일지 다시 불러오기 (중요!!)
+    await loadDailyLogs();
+
+    // 2️⃣ 이미지 생성 요청
+    const res = await fetch(
+        `${API}/daily-logs/${logId}/image`,
+        { method: "POST" }
+    );
+    const data = await res.json();
+
+    // 3️⃣ 이미지 표시
+    const BASE = "https://autotoxic-dorathy-noncharitably.ngrok-free.dev";
+    currentShareUrl = `${BASE}${data.image_url}?t=${Date.now()}`;
+
+    document.getElementById("shareImage").src = currentShareUrl;
+    document.getElementById("shareModal").classList.remove("hidden");
+}
+
+
+function closeShareModal() {
+    document.getElementById("shareModal").classList.add("hidden");
+}
+
+
+
+async function copyImageToClipboard() {
+    if (!currentShareUrl) {
+        alert("이미지가 없습니다.");
+        return;
+    }
+
+    try {
+        // 1️⃣ 이미지 fetch
+        const res = await fetch(currentShareUrl);
+        const blob = await res.blob();
+
+        // 2️⃣ ClipboardItem 생성
+        const item = new ClipboardItem({
+            [blob.type]: blob
+        });
+
+        // 3️⃣ 클립보드에 이미지 쓰기
+        await navigator.clipboard.write([item]);
+
+        alert("🖼️ 이미지가 복사되었습니다!\n카카오톡에 Ctrl+V 하세요.");
+    } catch (err) {
+        console.error(err);
+        alert(
+            "이미지 복사 실패 😢\n\n" +
+            "⚠️ 크롬/엣지에서만 가능하고\n" +
+            "⚠️ HTTPS(ngrok) 환경이어야 합니다."
+        );
+    }
+}
+
+
+// 초기 실행
+loadStudents();
+</script>
+
+
+<!-- 📤 학부모 공유 모달 -->
+<div id="shareModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" onclick="closeShareModal()">×</span>
+
+    <h3>📤 학부모에게 보내기</h3>
+
+    <img id="shareImage" class="share-image" />
+
+    <p class="hint">
+      🖱️ 이미지에서 <b>마우스 오른쪽 클릭 → “이미지 복사”</b><br/>
+    카카오톡 대화창에 바로 붙여넣기 하세요
+    </p>
+  </div>
+</div>
+
 </body>
 </html>
