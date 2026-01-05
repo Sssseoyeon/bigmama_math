@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.put("/{task_id}")
-def update_task_status(
+def update_task(
     task_id: int,
     task: DailyTaskUpdate,
     db: Session = Depends(get_db)
@@ -22,6 +22,9 @@ def update_task_status(
         raise HTTPException(status_code=404, detail="Task 없음")
 
     # ✅ 각각 개별적으로 업데이트
+    if task.content is not None:
+        db_task.content = task.content
+
     if task.grading_done is not None:
         db_task.grading_done = task.grading_done
 
@@ -38,3 +41,18 @@ def update_task_status(
         "review_done": db_task.review_done,
         "is_done": db_task.is_done
     }
+
+@router.delete("/{task_id}")
+def delete_task(
+    task_id: int,
+    db: Session = Depends(get_db)
+):
+    db_task = db.query(DailyTask).filter(DailyTask.id == task_id).first()
+
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task 없음")
+
+    db.delete(db_task)
+    db.commit()
+
+    return {"message": "할 일이 삭제되었습니다"}

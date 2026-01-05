@@ -22,12 +22,14 @@ def generate_report_image(student, log):
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 900, "height": 1200})
+        # viewport 높이를 작게 설정 (내용에 맞게 자동으로 늘어남)
+        page = browser.new_page(viewport={"width": 900, "height": 800})
 
         file_url = "file:///" + html_path.replace("\\", "/")
         page.goto(file_url)
 
         page.wait_for_load_state("networkidle")
+        # full_page=True로 하면 내용에 맞게 이미지 높이가 자동 조정됨
         page.screenshot(path=img_path, full_page=True)
 
         browser.close()

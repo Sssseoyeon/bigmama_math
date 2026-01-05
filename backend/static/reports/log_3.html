@@ -53,11 +53,11 @@ h1 {
 
 <body>
 
-<h1>{{ student.name }} 학생 수업 리포트</h1>
+<h1>김민수 학생 수업 리포트</h1>
 
 <div class="section">
     <div class="label">📅 수업 날짜</div>
-    {{ log.date }}
+    2026-01-05
 </div>
 
 <!-- ✅ 출결 / 특이사항 -->
@@ -66,57 +66,73 @@ h1 {
 
     <div>
         출결:
-        {% if log.attendance_status == "출석" %}
+        
             <span class="status-present">출석</span>
-        {% elif log.attendance_status == "지각" %}
-            <span class="status-late">지각</span>
-        {% elif log.attendance_status == "결석" %}
-            <span class="status-absent">결석</span>
-        {% else %}
-            미기록
-        {% endif %}
+        
     </div>
 
-    {% if log.absence_reason %}
-    <div>사유: {{ log.absence_reason }}</div>
-    {% endif %}
+    
 
-    {% if log.follow_up_action %}
-    <div>후속 조치: {{ log.follow_up_action }}</div>
-    {% endif %}
+    
 
-    {% if log.makeup_class_note %}
-    <div>보강: {{ log.makeup_class_note }}</div>
-    {% endif %}
+    
 </div>
 
 <!-- ✅ 과제 -->
 <div class="section">
     <div class="label">📝 오늘의 과제</div>
-    {% for task in log.tasks %}
+    
         <div class="task">
-            - {{ task.content }}
-            {% if task.is_done %}
+            - 숙제
+            
                 <span class="done">(완료)</span>
-            {% else %}
-                <span class="not-done">(미완료)</span>
-            {% endif %}
+            
         </div>
-    {% endfor %}
+    
+        <div class="task">
+            - 오답
+            
+                <span class="done">(완료)</span>
+            
+        </div>
+    
+        <div class="task">
+            - 쎈
+            
+                <span class="done">(완료)</span>
+            
+        </div>
+    
+        <div class="task">
+            - 숙제
+            
+                <span class="not-done">(미완료)</span>
+            
+        </div>
+    
+        <div class="task">
+            - 오답
+            
+                <span class="not-done">(미완료)</span>
+            
+        </div>
+    
+        <div class="task">
+            - 쎈
+            
+                <span class="not-done">(미완료)</span>
+            
+        </div>
+    
 </div>
 
 <!-- ✅ 시험 결과 -->
-{% if log.exam_result %}
-<div class="section box">
-    <div class="label">🧪 시험 결과</div>
-    {{ log.exam_result }}
-</div>
-{% endif %}
+
 
 <!-- ✅ 선생님 코멘트 -->
 <div class="section">
     <div class="label">👩‍🏫 선생님 코멘트</div>
-    {{ log.teacher_note or "없음" }}
+    잘했어요~
 </div>
 
 </body>

@@ -36,30 +36,61 @@ h1 {
 .not-done {
     color: #999;
 }
+
+/* 추가 스타일 */
+.box {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+    background: #fafafa;
+}
+
+.status-present { color: green; font-weight: bold; }
+.status-late { color: #f59e0b; font-weight: bold; }
+.status-absent { color: #ef4444; font-weight: bold; }
 </style>
 </head>
 
 <body>
 
-<h1>박채연 학생 수업 리포트</h1>
+<h1>박서연 학생 수업 리포트</h1>
 
 <div class="section">
     <div class="label">📅 수업 날짜</div>
-    2025-12-29
+    2026-01-05
 </div>
 
+<!-- ✅ 출결 / 특이사항 -->
+<div class="section box">
+    <div class="label">📌 출결 및 특이사항</div>
+
+    <div>
+        출결:
+        
+            미기록
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+<!-- ✅ 과제 -->
 <div class="section">
     <div class="label">📝 오늘의 과제</div>
     
         <div class="task">
-            - 학습지
+            - 쎈
             
-                <span class="done">(완료)</span>
+                <span class="not-done">(미완료)</span>
             
         </div>
     
         <div class="task">
-            - 테스트
+            - 개념원리
             
                 <span class="not-done">(미완료)</span>
             
@@ -67,6 +98,15 @@ h1 {
     
 </div>
 
+<!-- ✅ 시험 결과 -->
+
+<div class="section box">
+    <div class="label">🧪 시험 결과</div>
+    70
+</div>
+
+
+<!-- ✅ 선생님 코멘트 -->
 <div class="section">
     <div class="label">👩‍🏫 선생님 코멘트</div>
     없음

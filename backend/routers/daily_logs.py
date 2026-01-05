@@ -28,18 +28,53 @@ def create_daily_log(log: DailyLogCreate, db: Session = Depends(get_db)):
         DailyLog.date == log.date
     ).first()
 
+    # 3️ 일지가 이미 있으면 할 일만 추가 (업데이트)
     if existing:
-        raise HTTPException(status_code=400, detail="이미 오늘 일지가 있음")
+        # 기존 일지에 할 일 추가 (중복 방지)
+        existing_task_contents = {t.content for t in existing.tasks}  # 기존 할 일 내용 집합
+        for task in log.tasks:
+            # 같은 내용의 할 일이 이미 있으면 건너뛰기
+            if task.content not in existing_task_contents:
+                existing.tasks.append(
+                    DailyTask(
+                        content=task.content
+                    )
+                )
+                existing_task_contents.add(task.content)  # 추가한 내용도 집합에 추가
+        # 기타 필드가 있고 빈 문자열이 아니면 업데이트 (할 일만 추가하는 경우는 빈 문자열이므로 업데이트 안함)
+        if log.teacher_note is not None and log.teacher_note != "":
+            existing.teacher_note = log.teacher_note
+        if log.attendance_status is not None and log.attendance_status != "":
+            existing.attendance_status = log.attendance_status
+        if log.absence_reason is not None and log.absence_reason != "":
+            existing.absence_reason = log.absence_reason
+        if log.follow_up_action is not None and log.follow_up_action != "":
+            existing.follow_up_action = log.follow_up_action
+        if log.makeup_class_note is not None and log.makeup_class_note != "":
+            existing.makeup_class_note = log.makeup_class_note
+        if log.exam_result is not None and log.exam_result != "":
+            existing.exam_result = log.exam_result
+        
+        db.commit()
+        db.refresh(existing)
+        return existing
 
-    # 3️ DailyLog 생성 (tasks 제외!)
+    # 4️ DailyLog 생성 (tasks 제외!)
     new_log = DailyLog(
         student_id=log.student_id,
         date=log.date,
         teacher_note=log.teacher_note,
+
+        attendance_status=log.attendance_status,
+        absence_reason=log.absence_reason,
+        follow_up_action=log.follow_up_action,
+        makeup_class_note=log.makeup_class_note,
+        exam_result=log.exam_result,
+
         tasks=[]
     )
 
-    # 4️ Task 하나씩 추가
+    # 5️ Task 하나씩 추가
     for task in log.tasks:
         new_log.tasks.append(
             DailyTask(
@@ -47,7 +82,7 @@ def create_daily_log(log: DailyLogCreate, db: Session = Depends(get_db)):
             )
         )
 
-    # 5️ 저장
+    # 6️ 저장
     db.add(new_log)
     db.commit()
     db.refresh(new_log)

@@ -3,6 +3,15 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from backend.database import Base
 
+class Teacher(Base):
+    __tablename__ = "teachers"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    password = Column(String, nullable=False)  # 해시된 비밀번호
+    name = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 class Student(Base):
     __tablename__ = "students"
 
@@ -34,6 +43,22 @@ class DailyLog(Base):
     date = Column(Date, nullable=False)
     teacher_note = Column(Text, nullable=True)
     
+    attendance_status = Column(Text, nullable=True)
+    # 예: "출석", "지각", "결석"
+    # 👉 자동 저장 (attendance에서 읽어와서 넣을 예정)
+
+    absence_reason = Column(Text, nullable=True)
+    # 지각/결석 사유 (선생님 입력)
+
+    follow_up_action = Column(Text, nullable=True)
+    # 후속 조치 (전화, 문자, 상담 등)
+
+    makeup_class_note = Column(Text, nullable=True)
+    # 보강 관련 메모 (날짜/시간 자유 텍스트)
+
+    exam_result = Column(Text, nullable=True)
+    # 시험 결과 요약
+
 
     tasks = relationship(
         "DailyTask",
@@ -104,3 +129,22 @@ class DailyReport(Base):
     teacher_comment = Column(Text)
 
     pdf_path = Column(String, nullable=True)
+
+
+class Consultation(Base):
+    __tablename__ = "consultations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=True)  # 등록된 학생일 경우만
+    student_name = Column(String, nullable=False)  # 학생 이름 (직접 입력)
+    student_grade = Column(String, nullable=False)  # 학생 학년 (직접 입력)
+    date = Column(Date, nullable=False)
+    time = Column(Time, nullable=False)
+    parent_name = Column(String, nullable=True)  # 학부모 이름
+    content = Column(Text, nullable=True)  # 상담 내용
+    notes = Column(Text, nullable=True)  # 추가 메모
+    status = Column(String, default="scheduled")  # scheduled, completed, cancelled
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    student = relationship("Student", backref="consultations")

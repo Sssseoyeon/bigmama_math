@@ -2,57 +2,695 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>학원 관리자 테스트 페이지</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>빅마마 관리 시스템</title>
 
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --secondary-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --hover-bg: #f1f5f9;
+    --sidebar-bg: #ffffff;
+    --sidebar-width: 300px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
-.container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding: 0;
+    margin: 0;
     display: flex;
-    gap: 30px;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
-.panel {
-    width: 33%;
-    border-right: 1px solid #ddd;
-    padding-right: 15px;
+
+/* ===== 로그인 페이지 ===== */
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
 }
-.panel:last-child {
-    border-right: none;
+
+.login-container {
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 400px;
 }
-input, textarea, select, button {
-    width: 100%;
-    margin-bottom: 6px;
-    padding: 6px;
+
+.login-container h1 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
 }
-ul {
+
+.login-container p {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.9375rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-form input {
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.login-form button {
+    padding: 0.875rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.login-form button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background: #fee2e2;
+    color: var(--danger-color);
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.main-app {
+    display: none;
+}
+
+.main-app.logged-in {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.header p {
+    opacity: 0.9;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.header-btn {
+    padding: 0.625rem 1.25rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ===== 왼쪽 사이드바 (학생 리스트) ===== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.search-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-filter input {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-family: inherit;
+}
+
+.search-filter input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-filter select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: white;
+}
+
+.search-filter select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.student-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.student-item {
+    padding: 0.625rem 1rem;
+    margin-bottom: 0.375rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    background: var(--hover-bg);
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+}
+
+.student-item:hover {
+    background: #e0e7ff;
+    border-color: var(--border-color);
+}
+
+.student-item.selected {
+    background: #eef2ff;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.student-item strong {
+    display: inline;
+    font-size: 0.9375rem;
+}
+
+.student-item .grade {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    margin-left: 0.5rem;
+}
+
+.student-item.selected .grade {
+    color: var(--primary-color);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ===== 오른쪽 메인 컨텐츠 ===== */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border-color);
+    padding: 0 1rem;
+    flex-shrink: 0;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tab:hover {
+    color: var(--primary-color);
+    background: var(--hover-bg);
+}
+
+.tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+    padding: 2rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.content-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.content-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.75rem;
+    color: var(--text-primary);
+}
+
+/* ===== 출석 현황 ===== */
+.attendance-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    background: var(--hover-bg);
+}
+
+.summary-card.present {
+    background: #d1fae5;
+    color: var(--secondary-color);
+}
+
+.summary-card.late-absent {
+    background: #fee2e2;
+    color: var(--danger-color);
+}
+
+.summary-card.unchecked {
+    background: #f3f4f6;
+    color: var(--text-secondary);
+}
+
+.summary-card .number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.summary-card .label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.attendance-list {
     list-style: none;
     padding: 0;
 }
-li {
-    padding: 6px;
+
+.attendance-item {
+    padding: 0.875rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background: var(--hover-bg);
+    border-left: 4px solid transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.attendance-item.present {
+    border-left-color: var(--secondary-color);
+    background: #d1fae5;
+}
+
+.attendance-item.late-or-absent {
+    border-left-color: var(--danger-color);
+    background: #fee2e2;
+}
+
+.attendance-item.unchecked {
+    border-left-color: var(--text-secondary);
+}
+
+.attendance-item strong {
+    font-size: 0.9375rem;
+}
+
+.attendance-item .status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.attendance-item.present .status {
+    color: var(--secondary-color);
+}
+
+.attendance-item.late-or-absent .status {
+    color: var(--danger-color);
+}
+
+.attendance-item.unchecked .status {
+    color: var(--text-secondary);
+}
+
+.attendance-item .time-info {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* ===== 폼 요소 ===== */
+input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #059669;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.info-text {
+    padding: 0.75rem;
+    background: var(--hover-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.info-text.selected-info {
+    background: #eef2ff;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 1.25rem 0;
+    border: none;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: normal;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
     cursor: pointer;
 }
-li:hover {
-    background: #f0f0f0;
+
+.log-item {
+    background: var(--hover-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
 }
-.selected {
-    background: #dbeafe;
+
+.log-date {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
-.status-present { color: green; }
-.status-absent { color: red; }
-.status-unchecked { color: gray; }
+
+.task-item {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background: white;
+    border-radius: 6px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.task-content {
+    margin-top: 0.5rem;
+    color: var(--text-primary);
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--hover-bg);
+    border-radius: 8px;
+}
+
+.schedule-item label {
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 60px;
+    margin: 0;
+}
+
+.schedule-item input[type="time"] {
+    width: auto;
+    margin: 0;
+    flex: 1;
+    max-width: 150px;
+}
 
 /* ===== 공유 모달 ===== */
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    backdrop-filter: blur(4px);
 }
 
 .hidden {
@@ -61,194 +699,1038 @@ li:hover {
 
 .modal-content {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 420px;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
     text-align: center;
     position: relative;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-content h3 {
     margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    border: none;
+    padding: 0;
+    text-align: left;
+}
+
+.modal-content form {
+    text-align: left;
+}
+
+.modal-content form label {
+    color: var(--text-primary);
+}
+
+.modal-content form input {
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.modal-content form input:focus {
+    border-color: var(--primary-color);
 }
 
 .close {
     position: absolute;
-    right: 12px;
-    top: 8px;
+    right: 1rem;
+    top: 1rem;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 1.75rem;
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
 }
 
 .share-image {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin: 10px 0;
+    max-height: calc(90vh - 250px);
+    object-fit: contain;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin: 1rem 0;
+    box-shadow: var(--shadow-sm);
+    display: block;
 }
 
 .hint {
-    font-size: 13px;
-    color: #666;
-    margin-top: 8px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+    line-height: 1.6;
+    flex-shrink: 0;
+}
+
+.attendance-overview-section, .absent-students-section, .consultation-section {
+    display: none;
+    padding: 2rem;
+    background: var(--bg-color);
+    min-height: 100%;
+}
+
+.attendance-overview-section.active, .absent-students-section.active, .consultation-section.active {
+    display: block;
+}
+
+/* ===== 캘린더 ===== */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-top: 1rem;
+}
+
+.calendar-header {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 0.375rem;
+}
+
+.calendar-day {
+    min-height: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.calendar-day:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+}
+
+.calendar-day.other-month {
+    opacity: 0.4;
+    background: var(--hover-bg);
+}
+
+.calendar-day.today {
+    background: #eef2ff;
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+
+.calendar-day.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.calendar-day-number {
+    font-size: 0.75rem;
+    margin-bottom: 0.125rem;
+}
+
+.calendar-day-events {
+    width: 100%;
+    text-align: left;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-top: 0.125rem;
+    padding: 0.125rem 0.25rem;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.consultation-item {
+    background: var(--hover-bg);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+.consultation-item.completed {
+    border-left-color: var(--secondary-color);
+}
+
+.consultation-item.cancelled {
+    border-left-color: var(--danger-color);
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .header-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    
+    .header-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        max-height: 250px;
+    }
+    
+    .header {
+        padding: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .tabs {
+        overflow-x: auto;
+    }
+    
+    .tab-content {
+        padding: 1rem;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h1>📋 관리자 통합 테스트 페이지</h1>
-
-<div class="container">
-
-<!-- =========================
-     학생 관리
-     ========================= -->
-<div class="panel">
-<h3>👩‍🎓 학생 관리</h3>
-
-<input id="studentName" placeholder="이름" />
-<input id="studentGrade" placeholder="학년 (예: 중2)" />
-<button onclick="createStudent()">학생 등록</button>
-
-<hr />
-<ul id="studentList"></ul>
+<!-- 로그인 페이지 -->
+<div id="loginPage" class="login-page">
+    <div class="login-container">
+        <h1>📚 빅마마 관리 시스템</h1>
+        <p>선생님 계정으로 로그인하세요</p>
+        
+        <div id="loginError" class="error-message" style="display: none;"></div>
+        
+        <form class="login-form" id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+            <input 
+                id="loginUsername" 
+                type="text" 
+                placeholder="아이디" 
+                required 
+                autocomplete="username"
+            />
+            <input 
+                id="loginPassword" 
+                type="password" 
+                placeholder="비밀번호" 
+                required 
+                autocomplete="current-password"
+            />
+            <button type="submit">로그인</button>
+        </form>
+    </div>
 </div>
 
-<!-- =========================
-     출석 관리
-     ========================= -->
-<div class="panel">
-<h3>🕒 출석 관리 (오늘)</h3>
+<!-- 메인 앱 -->
+<div id="mainApp" class="main-app">
 
-<p id="attendanceStudentText">학생 선택 필요</p>
-
-<select id="attendanceStatus">
-    <option value="present">출석</option>
-    <option value="absent">결석</option>
-</select>
-
-<input id="checkIn" type="time" />
-<input id="checkOut" type="time" />
-
-<button onclick="submitAttendance()">출석 저장</button>
-
-<hr />
-<h4>📊 오늘 출석 현황</h4>
-<ul id="attendanceList"></ul>
+<div class="header">
+    <div class="header-top">
+        <div>
+            <h1>📋 빅마마 관리 시스템</h1>
+            <p>학생 출석, 일지, 일정을 한눈에 관리하세요</p>
+        </div>
+        <div class="header-buttons">
+            <span style="margin-right: 0.5rem; opacity: 0.9; font-size: 0.875rem;" id="currentTeacherName"></span>
+            <button class="header-btn" onclick="openStudentRegisterModal()">👩‍🎓 학생 등록</button>
+            <button class="header-btn" onclick="showAttendanceOverview()">📊 오늘 출석 현황</button>
+            <button class="header-btn" onclick="showAbsentStudents()">🚨 미출석 학생</button>
+            <button class="header-btn" onclick="showConsultationManagement()">💬 상담 관리</button>
+            <button class="header-btn" onclick="handleLogout()">🚪 로그아웃</button>
+        </div>
+    </div>
 </div>
 
-<!-- =========================
-     일지 관리
-     ========================= -->
-<div class="panel">
-<h3>📘 일지 관리</h3>
+<div class="main-container">
+    <!-- ===== 왼쪽 사이드바: 학생 리스트 ===== -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>👩‍🎓 학생 목록</h2>
+            <div class="search-filter">
+                <input id="searchInput" type="text" placeholder="🔍 이름으로 검색..." oninput="filterStudents()" />
+                <select id="gradeFilter" onchange="filterStudents()">
+                    <option value="">전체 학년</option>
+                </select>
+            </div>
+        </div>
+        <div class="student-list" id="studentList"></div>
+    </div>
 
-<p id="logStudentText">학생 선택 필요</p>
+    <!-- ===== 오른쪽 메인 컨텐츠: 세부 정보 ===== -->
+    <div class="main-content">
+        <!-- 탭 바 (항상 표시) -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('attendance')">🕒 출석 관리</button>
+            <button class="tab" onclick="switchTab('tasks')">✅ 할 일 관리</button>
+            <button class="tab" onclick="switchTab('log')">📘 일지 관리</button>
+            <button class="tab" onclick="switchTab('schedule')">📅 등원 시간</button>
+        </div>
 
-<input id="logDate" type="date" />
-<textarea id="tasksInput" placeholder="할 일 (한 줄에 하나)"></textarea>
-<textarea id="teacherNote" placeholder="선생님 메모"></textarea>
+        <!-- 학생이 선택되지 않았을 때 -->
+        <div id="noSelection" class="tab-content active" style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 3rem;">
+            <div>
+                <p style="font-size: 1.125rem; color: var(--text-secondary);">
+                    👈 왼쪽에서 학생을 선택하시면<br/>상세 정보를 확인할 수 있습니다
+                </p>
+            </div>
+        </div>
 
-<button onclick="createDailyLog()">일지 저장</button>
+        <!-- 학생이 선택되었을 때 표시 -->
+        <div id="studentDetails" style="display: none;">
 
-<hr />
-<ul id="logList"></ul>
+            <!-- 출석 관리 탭 -->
+            <div id="tab-attendance" class="tab-content active">
+                <div class="content-section">
+                    <h3>🕒 출석 관리</h3>
+                    
+                    <p id="attendanceStudentText" class="info-text">학생 정보</p>
+
+                    <label>등원 시간</label>
+                    <input id="checkIn" type="time" />
+
+                    <label>하원 시간</label>
+                    <input id="checkOut" type="time" />
+
+                    <button class="btn-primary" onclick="submitAttendance()">출석 저장</button>
+
+                    <hr class="divider" />
+                    <h4>📊 오늘 출석 현황</h4>
+                    
+                    <div id="attendanceSummary" class="attendance-summary"></div>
+                    <ul id="attendanceList" class="attendance-list"></ul>
+                </div>
+            </div>
+
+            <!-- 할 일 관리 탭 -->
+            <div id="tab-tasks" class="tab-content">
+                <div class="content-section">
+                    <h3>✅ 할 일 관리</h3>
+                    
+                    <label>날짜</label>
+                    <input id="taskDate" type="date" onchange="loadTasksForDate()" />
+
+                    <label>할 일 추가 (한 줄에 하나씩 입력)</label>
+                    <textarea id="taskInput" placeholder="예:&#10;수학 문제집 10페이지&#10;영어 단어 암기&#10;과학 실험 보고서"></textarea>
+
+                    <button class="btn-primary" onclick="addTasks()">할 일 추가</button>
+
+                    <hr class="divider" />
+                    <h4 id="tasksListTitle">할 일 목록</h4>
+                    <ul id="tasksList"></ul>
+                </div>
+            </div>
+
+            <!-- 일지 관리 탭 -->
+            <div id="tab-log" class="tab-content">
+                <div class="content-section">
+                    <h3>📘 일지 관리</h3>
+
+                    <label>날짜</label>
+                    <input id="logDate" type="date" onchange="loadLogForDate()" />
+
+                    <hr class="divider" />
+                    <h4>할 일 목록 (자동 불러오기)</h4>
+                    <div id="logTasksList" style="min-height: 100px; padding: 1rem; background: var(--hover-bg); border-radius: 8px; margin-bottom: 1rem;"></div>
+
+                    <label>출결 상태 (자동 불러오기)</label>
+                    <select id="logAttendanceStatus" disabled>
+                        <option value="">선택하세요</option>
+                        <option value="출석">✅ 출석</option>
+                        <option value="지각">⏰ 지각</option>
+                        <option value="결석">❌ 결석</option>
+                    </select>
+
+                    <label>선생님 메모</label>
+                    <textarea id="teacherNote" placeholder="오늘 수업 내용, 특이사항 등을 기록하세요"></textarea>
+
+                    <label>지각/결석 사유</label>
+                    <textarea id="absenceReason" placeholder="지각 또는 결석 사유를 입력하세요"></textarea>
+
+                    <label>후속 조치</label>
+                    <textarea id="followUpAction" placeholder="전화, 문자, 상담 등 후속 조치 내용"></textarea>
+
+                    <label>보강 내용</label>
+                    <textarea id="makeupClassNote" placeholder="예: 4/3 목요일 오후 6시"></textarea>
+
+                    <label>시험 결과</label>
+                    <textarea id="examResult" placeholder="시험 결과 요약 (점수, 등수, 특이사항 등)"></textarea>
+
+                    <button class="btn-primary" onclick="createDailyLog()">💾 일지 저장</button>
+
+                    <hr class="divider" />
+                    <h4>작성된 일지</h4>
+                    <ul id="logList"></ul>
+                </div>
+            </div>
+
+            <!-- 등원 시간 탭 -->
+            <div id="tab-schedule" class="tab-content">
+                <div class="content-section">
+                    <h3>📅 요일별 등원 시간</h3>
+                    <ul id="scheduleList"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오늘 출석 현황 전체 보기 섹션 -->
+        <div id="attendanceOverviewSection" class="attendance-overview-section">
+            <div class="content-section">
+                <h3>📊 오늘 출석 현황</h3>
+                <div id="attendanceOverviewSummary" class="attendance-summary"></div>
+                <ul id="attendanceOverviewList" class="attendance-list"></ul>
+            </div>
+        </div>
+
+        <!-- 미출석 학생 전체 보기 섹션 -->
+        <div id="absentStudentsSection" class="absent-students-section">
+            <div class="content-section">
+                <h3>🚨 미출석 학생</h3>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button class="btn-secondary" onclick="loadAbsentStudents()" style="flex: 1;">🔄 새로고침</button>
+                    <button class="btn-danger" onclick="sendSelectedSMS()" style="flex: 1;">📱 선택 문자 발송</button>
+                </div>
+                <ul id="absentList" class="attendance-list"></ul>
+            </div>
+        </div>
+
+        <!-- 상담 관리 섹션 -->
+        <div id="consultationSection" class="consultation-section">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <button class="btn-primary" onclick="openConsultationModal()" style="width: auto;">➕ 상담 등록</button>
+                <button class="btn-secondary" onclick="loadConsultations()" style="width: auto;">🔄 새로고침</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 1.5rem;">
+                <!-- 캘린더 -->
+                <div class="content-section">
+                    <h3>📅 상담 일정 캘린더</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <button onclick="changeMonth(-1)" style="padding: 0.5rem 1rem; background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer;">◀ 이전</button>
+                        <h4 id="calendarMonth" style="margin: 0;"></h4>
+                        <button onclick="changeMonth(1)" style="padding: 0.5rem 1rem; background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer;">다음 ▶</button>
+                    </div>
+                    <div id="consultationCalendar" class="calendar"></div>
+                </div>
+                
+                <!-- 선택된 날짜의 상담 목록 -->
+                <div class="content-section" style="max-height: calc(100vh - 250px); overflow-y: auto;">
+                    <h3 id="selectedDateTitle" style="font-size: 1rem;">📋 상담 목록</h3>
+                    <ul id="consultationList" style="list-style: none; padding: 0;"></ul>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <button class="btn-secondary" onclick="selectedConsultationDate = null; renderConsultationList();" style="width: 100%; padding: 0.5rem; font-size: 0.875rem;">
+                            전체 예정 상담 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<!-- =========================
-     요일별 등원 시간 관리
-     ========================= -->
-<div class="panel">
-<h3>📅 요일별 등원 시간</h3>
-<ul id="scheduleList"></ul>
 </div>
-
-
-<!-- =========================
-     미출석 학생 관리
-     ========================= -->
-<div class="panel">
-<h3>🚨 아직 안 온 학생</h3>
-
-<button onclick="loadAbsentStudents()">새로고침</button>
-<button onclick="sendSelectedSMS()">선택 문자 발송</button>
-
-<hr />
-<ul id="absentList"></ul>
-</div>
-
-
-
-
-</div>
+<!-- 메인 앱 종료 -->
 
 <script>
-const API = "http://127.0.0.1:8000";
+// API URL 설정
+// - 개발 환경: "http://127.0.0.1:8000/api"
+// - 프로덕션 (같은 서버): window.location.origin + "/api"
+// - 프로덕션 (별도 서버): "http://your-server-ip:8000/api"
+const API = window.location.origin.includes("127.0.0.1") || window.location.origin.includes("localhost") 
+    ? "http://127.0.0.1:8000/api" 
+    : (window.location.origin + "/api");
 let selectedStudent = null;
+let allStudents = [];
+let filteredStudents = [];
+let currentToken = null;
+let currentTeacher = null;
+
+// =========================
+// 인증 관련
+// =========================
+function getToken() {
+    return localStorage.getItem('auth_token');
+}
+
+function setToken(token) {
+    localStorage.setItem('auth_token', token);
+}
+
+function removeToken() {
+    localStorage.removeItem('auth_token');
+}
+
+function getAuthHeaders() {
+    const token = getToken();
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+}
+
+async function checkAuth() {
+    const token = getToken();
+    if (!token) {
+        return false;
+    }
+
+    try {
+        const res = await fetch(`${API}/auth/me?token=${encodeURIComponent(token)}`);
+        if (res.ok) {
+            currentTeacher = await res.json();
+            return true;
+        } else {
+            // 인증 실패 시 토큰 제거
+            removeToken();
+        }
+    } catch (error) {
+        console.error("인증 확인 실패:", error);
+        removeToken();
+    }
+    
+    return false;
+}
+
+function showLoginPage() {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('mainApp').classList.remove('logged-in');
+    currentToken = null;
+    currentTeacher = null;
+}
+
+function showMainApp() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').classList.add('logged-in');
+    if (currentTeacher) {
+        document.getElementById('currentTeacherName').textContent = '빅마마 선생님';
+    }
+}
+
+async function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+
+    errorDiv.style.display = 'none';
+
+    if (!username || !password) {
+        errorDiv.textContent = '아이디와 비밀번호를 입력해주세요.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            setToken(data.token);
+            currentToken = data.token;
+            currentTeacher = {
+                teacher_name: data.teacher_name,
+                username: data.username
+            };
+            showMainApp();
+            initializeApp();
+        } else {
+            const errorData = await res.json().catch(() => ({ detail: '로그인에 실패했습니다.' }));
+            errorDiv.textContent = errorData.detail || '로그인에 실패했습니다.';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error("로그인 오류:", error);
+        errorDiv.textContent = '서버 연결에 실패했습니다.';
+        errorDiv.style.display = 'block';
+    }
+}
+
+async function handleLogout() {
+    const token = getToken();
+    if (token) {
+        try {
+            await fetch(`${API}/auth/logout?token=${encodeURIComponent(token)}`, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error("로그아웃 오류:", error);
+        }
+    }
+    
+    removeToken();
+    currentToken = null;
+    currentTeacher = null;
+    showLoginPage();
+}
+
+async function initializeApp() {
+    // 로그인 후 앱 초기화
+    await loadStudents();
+    loadAbsentStudents();
+    loadAttendanceToday();
+    document.getElementById("logDate").value = new Date().toISOString().slice(0, 10);
+    const taskDateInput = document.getElementById("taskDate");
+    if (taskDateInput) {
+        taskDateInput.value = new Date().toISOString().slice(0, 10);
+    }
+    
+    // 상담은 이제 학생 이름과 학년을 직접 입력하는 방식
+}
+
+// 상담 모달의 학생 선택 옵션 채우기
+function populateConsultationStudentOptions() {
+    const select = document.getElementById("consultationStudentId");
+    select.innerHTML = '<option value="">선택하세요</option>';
+    
+    allStudents.forEach(student => {
+        const option = document.createElement('option');
+        option.value = student.id;
+        option.textContent = `${student.name} (${student.grade})`;
+        select.appendChild(option);
+    });
+}
+
+// 페이지 로드 시 인증 확인
+(async function() {
+    const isAuthenticated = await checkAuth();
+    if (isAuthenticated) {
+        showMainApp();
+        initializeApp();
+    } else {
+        showLoginPage();
+    }
+})();
 
 const WEEKDAYS = [
-  { value: 0, label: "월" },
-  { value: 1, label: "화" },
-  { value: 2, label: "수" },
-  { value: 3, label: "목" },
-  { value: 4, label: "금" },
-  { value: 5, label: "토" },
-  { value: 6, label: "일" }
+    { value: 0, label: "월" },
+    { value: 1, label: "화" },
+    { value: 2, label: "수" },
+    { value: 3, label: "목" },
+    { value: 4, label: "금" },
+    { value: 5, label: "토" },
+    { value: 6, label: "일" }
 ];
 
 // =========================
-// 학생 목록
+// 탭 전환
+// =========================
+function switchTab(tabName) {
+    // 학생이 선택되지 않았을 때는 선택 메시지만 표시
+    if (!selectedStudent) {
+        // 모든 탭과 컨텐츠 숨기기
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // 선택된 탭 활성화
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+        
+        // noSelection 메시지 표시
+        document.getElementById("noSelection").style.display = "flex";
+        document.getElementById("noSelection").classList.add("active");
+        document.getElementById("studentDetails").style.display = "none";
+        return;
+    }
+    
+    // 모든 탭과 컨텐츠 숨기기
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // 선택된 탭 활성화
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // 학생 상세 정보 표시
+    document.getElementById("noSelection").style.display = "none";
+    document.getElementById("noSelection").classList.remove("active");
+    document.getElementById("studentDetails").style.display = "block";
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    
+    // 출석 현황/미출석 학생/상담 관리 섹션 숨기기
+    document.getElementById("attendanceOverviewSection").classList.remove("active");
+    document.getElementById("absentStudentsSection").classList.remove("active");
+    document.getElementById("consultationSection").classList.remove("active");
+}
+
+// =========================
+// 상담 관리 표시
+// =========================
+function showConsultationManagement() {
+    // 모든 섹션 숨기기
+    document.getElementById("noSelection").style.display = "none";
+    document.getElementById("noSelection").classList.remove("active");
+    document.getElementById("studentDetails").style.display = "none";
+    document.getElementById("attendanceOverviewSection").classList.remove("active");
+    document.getElementById("absentStudentsSection").classList.remove("active");
+    document.getElementById("consultationSection").classList.add("active");
+    
+    // 상담 목록 및 캘린더 로드
+    loadConsultations();
+}
+
+// =========================
+// 학생 목록 정렬 (학년순: 초1~초6, 중1~중3, 고1~고3, 같은 학년이면 가나다)
+// =========================
+function sortStudents(students) {
+    // 학년을 숫자로 변환하는 함수
+    function getGradeOrder(grade) {
+        const gradeStr = grade.toLowerCase().trim();
+        
+        // 초등학교: 초1 ~ 초6 -> 1 ~ 6
+        if (gradeStr.startsWith('초')) {
+            const num = parseInt(gradeStr.replace('초', '').trim());
+            return isNaN(num) ? 999 : num;
+        }
+        
+        // 중학교: 중1 ~ 중3 -> 7 ~ 9
+        if (gradeStr.startsWith('중')) {
+            const num = parseInt(gradeStr.replace('중', '').trim());
+            return isNaN(num) ? 999 : 6 + num;
+        }
+        
+        // 고등학교: 고1 ~ 고3 -> 10 ~ 12
+        if (gradeStr.startsWith('고')) {
+            const num = parseInt(gradeStr.replace('고', '').trim());
+            return isNaN(num) ? 999 : 9 + num;
+        }
+        
+        // 알 수 없는 학년은 맨 뒤로
+        return 999;
+    }
+    
+    return students.sort((a, b) => {
+        const orderA = getGradeOrder(a.grade);
+        const orderB = getGradeOrder(b.grade);
+        
+        // 학년 순서가 다르면 학년으로 정렬
+        if (orderA !== orderB) {
+            return orderA - orderB;
+        }
+        
+        // 같은 학년이면 이름 가나다순
+        return a.name.localeCompare(b.name, 'ko');
+    });
+}
+
+// =========================
+// 학생 목록 로드
 // =========================
 async function loadStudents() {
     const res = await fetch(`${API}/students/`);
-    const students = await res.json();
+    allStudents = await res.json();
+    
+    // 학년 목록 추출 및 필터 옵션 업데이트
+    const grades = [...new Set(allStudents.map(s => s.grade))].sort();
+    const gradeFilter = document.getElementById("gradeFilter");
+    const currentValue = gradeFilter.value;
+    
+    // 기존 옵션 유지 (전체 학년 제외)
+    gradeFilter.innerHTML = '<option value="">전체 학년</option>';
+    grades.forEach(grade => {
+        const option = document.createElement('option');
+        option.value = grade;
+        option.textContent = grade;
+        gradeFilter.appendChild(option);
+    });
+    
+    // 이전 필터 값 복원
+    if (currentValue) {
+        gradeFilter.value = currentValue;
+    }
+    
+    filterStudents();
+}
+
+// =========================
+// 학생 필터링
+// =========================
+function filterStudents() {
+    const searchText = document.getElementById("searchInput").value.toLowerCase().trim();
+    const gradeFilter = document.getElementById("gradeFilter").value;
+    
+    filteredStudents = allStudents.filter(student => {
+        const matchesSearch = !searchText || student.name.toLowerCase().includes(searchText);
+        const matchesGrade = !gradeFilter || student.grade === gradeFilter;
+        return matchesSearch && matchesGrade;
+    });
+    
+    // 정렬
+    filteredStudents = sortStudents(filteredStudents);
+    
+    // 리스트 렌더링
+    renderStudentList();
+}
+
+// =========================
+// 학생 리스트 렌더링
+// =========================
+function renderStudentList() {
     const list = document.getElementById("studentList");
     list.innerHTML = "";
 
-    students.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = `${s.name} (${s.grade})`;
-        li.onclick = () => selectStudent(s, li);
-        list.appendChild(li);
+    if (filteredStudents.length === 0) {
+        list.innerHTML = '<div class="empty-state">검색 결과가 없습니다</div>';
+        return;
+    }
+
+    filteredStudents.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "student-item";
+        if (selectedStudent && s.id === selectedStudent.id) {
+            div.classList.add("selected");
+        }
+        div.innerHTML = `
+            <div>
+                <strong>${s.name}</strong>
+                <span class="grade">${s.grade}</span>
+            </div>
+        `;
+        div.onclick = () => selectStudent(s, div);
+        list.appendChild(div);
     });
 }
 
 // =========================
 // 학생 선택
 // =========================
-function selectStudent(student, li) {
+function selectStudent(student, element) {
     selectedStudent = student;
 
-    document.querySelectorAll("li").forEach(x =>
+    document.querySelectorAll(".student-item").forEach(x =>
         x.classList.remove("selected"));
-    li.classList.add("selected");
+    element.classList.add("selected");
 
-    document.getElementById("attendanceStudentText")
-        .textContent = `선택: ${student.name}`;
-    document.getElementById("logStudentText")
-        .textContent = `선택: ${student.name}`;
+    // 학생 상세 정보 표시
+    document.getElementById("noSelection").style.display = "none";
+    document.getElementById("noSelection").classList.remove("active");
+    document.getElementById("studentDetails").style.display = "block";
+    document.getElementById("attendanceOverviewSection").classList.remove("active");
+    document.getElementById("absentStudentsSection").classList.remove("active");
+    document.getElementById("consultationSection").classList.remove("active");
+
+    // 일지의 출결 상태 선택 활성화
+    document.getElementById("logAttendanceStatus").disabled = false;
+
+    // 첫 번째 탭 활성화
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelector('.tab').classList.add('active');
+    document.getElementById('tab-attendance').classList.add('active');
 
     loadAttendanceToday();
     loadDailyLogs();
     loadStudentSchedules();
+    loadStudentAttendance(); // 이 함수에서 학생 정보와 등원 예정 시간 표시
+    loadInitialLogData(); // 오늘 날짜의 일지 정보 불러오기
+    
+    // 할 일 관리 탭 초기화 (오늘 날짜로 설정)
+    const taskDateInput = document.getElementById("taskDate");
+    if (taskDateInput) {
+        taskDateInput.value = new Date().toISOString().slice(0, 10);
+        loadTasksForDate();
+    }
+}
+
+// =========================
+// 학생 등록 모달 열기
+// =========================
+function openStudentRegisterModal() {
+    document.getElementById("studentRegisterModal").classList.remove("hidden");
+    // 폼 초기화
+    document.getElementById("modalStudentName").value = "";
+    document.getElementById("modalStudentGrade").value = "";
+    document.getElementById("modalParentPhone").value = "";
+}
+
+// =========================
+// 학생 등록 모달 닫기
+// =========================
+function closeStudentRegisterModal() {
+    document.getElementById("studentRegisterModal").classList.add("hidden");
 }
 
 // =========================
 // 학생 생성
 // =========================
 async function createStudent() {
-    await fetch(`${API}/students/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            name: studentName.value,
-            grade: studentGrade.value
-        })
+    const nameInput = document.getElementById("modalStudentName");
+    const gradeInput = document.getElementById("modalStudentGrade");
+    const phoneInput = document.getElementById("modalParentPhone");
+    
+    if (!nameInput.value.trim() || !gradeInput.value.trim()) {
+        alert("이름과 학년을 모두 입력해주세요.");
+        return;
+    }
+    
+    try {
+        await fetch(`${API}/students/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: nameInput.value.trim(),
+                grade: gradeInput.value.trim(),
+                parent_phone: phoneInput.value.trim() || null
+            })
+        });
+        nameInput.value = "";
+        gradeInput.value = "";
+        phoneInput.value = "";
+        await loadStudents(); // 학생 목록 업데이트
+        closeStudentRegisterModal();
+        alert("학생이 등록되었습니다!");
+    } catch (error) {
+        alert("학생 등록 중 오류가 발생했습니다.");
+    }
+}
+
+// =========================
+// 오늘 출석 현황 전체 보기
+// =========================
+function showAttendanceOverview() {
+    // 모든 섹션 숨기기
+    document.getElementById("noSelection").style.display = "none";
+    document.getElementById("noSelection").classList.remove("active");
+    document.getElementById("studentDetails").style.display = "none";
+    document.getElementById("absentStudentsSection").classList.remove("active");
+    document.getElementById("attendanceOverviewSection").classList.add("active");
+    
+    // 출석 현황 로드
+    loadAttendanceOverview();
+}
+
+// =========================
+// 오늘 출석 현황 전체 보기 로드
+// =========================
+async function loadAttendanceOverview() {
+    const res = await fetch(`${API}/attendance/today`);
+    const data = await res.json();
+    const list = document.getElementById("attendanceOverviewList");
+    const summary = document.getElementById("attendanceOverviewSummary");
+    
+    list.innerHTML = "";
+    
+    // 요약 표시
+    if (data.summary) {
+        summary.innerHTML = `
+            <div class="summary-card present">
+                <span class="number">${data.summary.present}</span>
+                <span class="label">출석</span>
+            </div>
+            <div class="summary-card late-absent">
+                <span class="number">${data.summary.late_or_absent}</span>
+                <span class="label">지각/결석</span>
+            </div>
+            <div class="summary-card unchecked">
+                <span class="number">${data.summary.unchecked}</span>
+                <span class="label">미확인</span>
+            </div>
+        `;
+    }
+
+    if (data.students.length === 0) {
+        list.innerHTML = '<li class="empty-state">오늘 출석 정보가 없습니다</li>';
+        return;
+    }
+
+    data.students.forEach(s => {
+        const li = document.createElement("li");
+        li.className = `attendance-item ${s.status}`;
+        
+        let statusText = '';
+        let statusIcon = '';
+        let isLate = false;
+        
+        // 예정 시간보다 늦게 등원한 경우 확인
+        if (s.status === 'present' && s.check_in && s.expected_time) {
+            const checkInTime = s.check_in.split(':').map(Number);
+            const expectedTime = s.expected_time.split(':').map(Number);
+            const checkInMinutes = checkInTime[0] * 60 + checkInTime[1];
+            const expectedMinutes = expectedTime[0] * 60 + expectedTime[1];
+            isLate = checkInMinutes > expectedMinutes;
+        }
+        
+        if (s.status === 'present') {
+            statusText = isLate ? '출석(지각)' : '출석';
+            statusIcon = isLate ? '⚠️' : '✅';
+        } else if (s.status === 'late_or_absent') {
+            statusText = '지각/결석';
+            statusIcon = '⚠️';
+        } else {
+            statusText = '미확인';
+            statusIcon = '⏳';
+        }
+
+        let timeInfo = '';
+        if (s.check_in) {
+            timeInfo = `<div class="time-info">등원: ${s.check_in}</div>`;
+        } else if (s.expected_time) {
+            timeInfo = `<div class="time-info">예정: ${s.expected_time}</div>`;
+        }
+
+        li.innerHTML = `
+            <div>
+                <strong>${s.name}</strong>
+                ${timeInfo}
+            </div>
+            <div class="status">
+                ${statusIcon} ${statusText}
+            </div>
+        `;
+        list.appendChild(li);
     });
-    loadStudents();
+}
+
+// =========================
+// 미출석 학생 전체 보기
+// =========================
+function showAbsentStudents() {
+    // 모든 섹션 숨기기
+    document.getElementById("noSelection").style.display = "none";
+    document.getElementById("noSelection").classList.remove("active");
+    document.getElementById("studentDetails").style.display = "none";
+    document.getElementById("attendanceOverviewSection").classList.remove("active");
+    document.getElementById("absentStudentsSection").classList.add("active");
+    
+    // 미출석 학생 로드
+    loadAbsentStudents();
 }
 
 // =========================
@@ -256,132 +1738,543 @@ async function createStudent() {
 // =========================
 async function submitAttendance() {
     if (!selectedStudent) {
-        return alert("학생 선택");
+        alert("⚠️ 학생을 먼저 선택해주세요.");
+        return;
     }
 
-    // ✅ payload 먼저 만든다
-    const payload = {
-        student_id: selectedStudent.id,
-        date: new Date().toISOString().slice(0, 10),
-        status: attendanceStatus.value,
-        check_in: checkIn.value || null
-    };
+    try {
+        const checkIn = document.getElementById("checkIn").value;
+        const checkOut = document.getElementById("checkOut").value;
+        
+        // 등원 시간이 있으면 출석, 없으면 결석으로 간주
+        const status = checkIn ? "present" : "absent";
+        
+        // check_in과 check_out이 빈 문자열이면 null로 변환
+        // 타임존 문제를 피하기 위해 로컬 날짜를 직접 계산
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        
+        const payload = {
+            student_id: selectedStudent.id,
+            date: todayStr,
+            status: status,
+            check_in: checkIn && checkIn.trim() ? checkIn.trim() : null,
+            check_out: checkOut && checkOut.trim() ? checkOut.trim() : null
+        };
+        
+        // 디버깅: 전송하는 데이터 확인
+        console.log("DEBUG: 출석 저장 요청 데이터:", payload);
+        console.log("DEBUG: checkIn 원본 값:", checkIn, "타입:", typeof checkIn);
 
-    // ✅ 퇴실 시간 입력했을 때만 추가
-    if (checkOut.value) {
-        payload.check_out = checkOut.value;
+        const response = await fetch(`${API}/attendance/`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(payload)
+        });
+        
+        // 디버깅: 응답 데이터 확인
+        const responseData = await response.json();
+        console.log("DEBUG: 출석 저장 응답 데이터:", responseData);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("출석 저장 실패 응답:", errorText);
+            throw new Error(errorText || "출석 저장 실패");
+        }
+
+        // 출석 저장 후 자동 업데이트
+        await loadAttendanceToday();
+        await loadStudentAttendance();
+        await loadAttendanceOverview(); // 전체 출석 현황도 업데이트
+        await loadAbsentStudents(); // 미출석 학생 목록도 업데이트
+        
+        // 입력 필드는 출석 기록이 있으면 다시 채워짐 (loadStudentAttendance에서 처리)
+        alert("출석이 저장되었습니다!");
+    } catch (error) {
+        console.error("출석 저장 실패:", error);
+        const errorMessage = error.message || "출석 저장 중 오류가 발생했습니다.";
+        alert(`출석 저장 중 오류가 발생했습니다.\n\n오류 내용: ${errorMessage}`);
     }
-
-    // ✅ fetch는 한 번만
-    await fetch(`${API}/attendance/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
-
-    await loadAttendanceToday();
 }
 
 // =========================
-// 오늘 출석 현황
+// 오늘 출석 현황 (전체)
 // =========================
 async function loadAttendanceToday() {
     const res = await fetch(`${API}/attendance/today`);
     const data = await res.json();
     const list = document.getElementById("attendanceList");
+    const summary = document.getElementById("attendanceSummary");
+    
     list.innerHTML = "";
+    
+    // 요약 표시
+    if (data.summary) {
+        summary.innerHTML = `
+            <div class="summary-card present">
+                <span class="number">${data.summary.present}</span>
+                <span class="label">출석</span>
+            </div>
+            <div class="summary-card late-absent">
+                <span class="number">${data.summary.late_or_absent}</span>
+                <span class="label">지각/결석</span>
+            </div>
+            <div class="summary-card unchecked">
+                <span class="number">${data.summary.unchecked}</span>
+                <span class="label">미확인</span>
+            </div>
+        `;
+    }
+
+    if (data.students.length === 0) {
+        list.innerHTML = '<li class="empty-state">오늘 출석 정보가 없습니다</li>';
+        return;
+    }
 
     data.students.forEach(s => {
         const li = document.createElement("li");
+        li.className = `attendance-item ${s.status}`;
+        
+        // 상태에 따른 텍스트 및 아이콘
+        let statusText = '';
+        let statusIcon = '';
+        let isLate = false;
+        
+        // 예정 시간보다 늦게 등원한 경우 확인
+        if (s.status === 'present' && s.check_in && s.expected_time) {
+            const checkInTime = s.check_in.split(':').map(Number);
+            const expectedTime = s.expected_time.split(':').map(Number);
+            const checkInMinutes = checkInTime[0] * 60 + checkInTime[1];
+            const expectedMinutes = expectedTime[0] * 60 + expectedTime[1];
+            isLate = checkInMinutes > expectedMinutes;
+        }
+        
+        if (s.status === 'present') {
+            statusText = isLate ? '출석(지각)' : '출석';
+            statusIcon = isLate ? '⚠️' : '✅';
+        } else if (s.status === 'late_or_absent') {
+            statusText = '지각/결석';
+            statusIcon = '⚠️';
+        } else {
+            statusText = '미확인';
+            statusIcon = '⏳';
+        }
+
+        // 시간 정보
+        let timeInfo = '';
+        if (s.check_in) {
+            timeInfo = `<div class="time-info">등원: ${s.check_in}</div>`;
+        } else if (s.expected_time) {
+            timeInfo = `<div class="time-info">예정: ${s.expected_time}</div>`;
+        }
+
         li.innerHTML = `
-            ${s.name} -
-            <span class="status-${s.status}">
-                ${s.status}
-            </span>
+            <div>
+                <strong>${s.name}</strong>
+                ${timeInfo}
+            </div>
+            <div class="status">
+                ${statusIcon} ${statusText}
+            </div>
         `;
         list.appendChild(li);
     });
 }
 
 // =========================
-// 일지 생성
+// 선택된 학생의 출석 기록
 // =========================
-async function createDailyLog() {
-    if (!selectedStudent) return alert("학생 선택");
+async function loadStudentAttendance() {
+    if (!selectedStudent) return;
+    
+    try {
+        // 오늘 출석 기록 로드
+        const res = await fetch(`${API}/attendance/student/${selectedStudent.id}`);
+        const records = await res.json();
+        
+        // 오늘 등원 예정 시간 가져오기
+        const today = new Date();
+        // JavaScript: getDay() -> 0=일요일, 1=월요일, ..., 6=토요일
+        // Python weekday(): 0=월요일, 1=화요일, ..., 6=일요일
+        const jsDay = today.getDay();
+        const weekday = jsDay === 0 ? 6 : jsDay - 1; // 변환: 0(일) -> 6, 1(월) -> 0, ..., 6(토) -> 5
+        const scheduleRes = await fetch(`${API}/students/${selectedStudent.id}/schedules/`);
+        const schedules = await scheduleRes.json();
+        const todaySchedule = schedules.find(s => s.weekday === weekday);
+        const expectedTime = todaySchedule ? todaySchedule.expected_time : null;
+        
+        // 학생 정보 표시 (등원 예정 시간 포함)
+        let studentInfo = `<span class="selected-info">선택된 학생: <strong>${selectedStudent.name}</strong> (${selectedStudent.grade})</span>`;
+        if (expectedTime) {
+            studentInfo += `<br/><span style="color: var(--text-secondary); font-size: 0.875rem;">⏰ 오늘 등원 예정: ${expectedTime}</span>`;
+        }
+        document.getElementById("attendanceStudentText").innerHTML = studentInfo;
+        document.getElementById("attendanceStudentText").classList.add("selected-info");
+        
+        // 오늘 출석 기록이 있으면 폼에 표시
+        // 타임존 문제를 피하기 위해 로컬 날짜를 직접 계산
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        const todayRecord = records.find(r => r.date === todayStr);
+        
+        if (todayRecord) {
+            if (todayRecord.check_in) {
+                document.getElementById("checkIn").value = todayRecord.check_in;
+            } else {
+                document.getElementById("checkIn").value = "";
+            }
+            if (todayRecord.check_out) {
+                document.getElementById("checkOut").value = todayRecord.check_out;
+            } else {
+                document.getElementById("checkOut").value = "";
+            }
+        } else {
+            document.getElementById("checkIn").value = "";
+            document.getElementById("checkOut").value = "";
+        }
+    } catch (error) {
+        console.error("출석 기록 불러오기 실패:", error);
+    }
+}
 
-    const tasks = tasksInput.value
+// =========================
+// 날짜별 할 일 로드
+// =========================
+async function loadTasksForDate() {
+    if (!selectedStudent) return;
+    
+    const taskDateInput = document.getElementById("taskDate");
+    if (!taskDateInput) return;
+    
+    const selectedDate = taskDateInput.value;
+    if (!selectedDate) return;
+    
+    try {
+        // 해당 날짜의 일지 조회
+        const res = await fetch(`${API}/daily-logs/student/${selectedStudent.id}`);
+        const logs = await res.json();
+        const targetLog = logs.find(log => log.date === selectedDate);
+        
+        const tasksList = document.getElementById("tasksList");
+        const tasksListTitle = document.getElementById("tasksListTitle");
+        tasksList.innerHTML = "";
+        
+        // 제목 업데이트
+        const dateObj = new Date(selectedDate);
+        const today = new Date().toISOString().slice(0, 10);
+        if (selectedDate === today) {
+            tasksListTitle.textContent = "오늘 할 일 목록";
+        } else {
+            const dateStr = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일 할 일 목록`;
+            tasksListTitle.textContent = dateStr;
+        }
+        
+        if (targetLog && targetLog.tasks && targetLog.tasks.length > 0) {
+            targetLog.tasks.forEach(task => {
+                const li = document.createElement("li");
+                li.className = "task-item";
+                li.style.marginBottom = "0.75rem";
+                li.id = `task-item-${task.id}`;
+                
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <div class="checkbox-group">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        ${task.grading_done ? "checked" : ""}
+                                        onchange="updateTask(${task.id}, 'grading_done', this.checked)"
+                                    />
+                                    채점
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        ${task.review_done ? "checked" : ""}
+                                        onchange="updateTask(${task.id}, 'review_done', this.checked)"
+                                    />
+                                    오답
+                                </label>
+                                ${task.is_done ? '<strong style="color: var(--secondary-color);">✅ 완료</strong>' : ''}
+                            </div>
+                            <div class="task-content" id="task-content-${task.id}" style="margin-top: 0.5rem;">${task.content}</div>
+                        </div>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button onclick="editTask(${task.id}, '${task.content.replace(/'/g, "\\'")}')" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">수정</button>
+                            <button onclick="deleteTask(${task.id})" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--danger-color); color: white; border: none; border-radius: 4px; cursor: pointer;">삭제</button>
+                        </div>
+                    </div>
+                `;
+                tasksList.appendChild(li);
+            });
+        } else {
+            tasksList.innerHTML = '<li class="empty-state">해당 날짜의 할 일이 없습니다</li>';
+        }
+    } catch (error) {
+        console.error("할 일 로드 실패:", error);
+    }
+}
+
+// =========================
+// 할 일 추가
+// =========================
+async function addTasks() {
+    if (!selectedStudent) {
+        alert("⚠️ 학생을 먼저 선택해주세요.");
+        return;
+    }
+    
+    const taskInput = document.getElementById("taskInput");
+    const taskDateInput = document.getElementById("taskDate");
+    const tasksText = taskInput.value.trim();
+    
+    if (!tasksText) {
+        alert("⚠️ 할 일을 입력해주세요.");
+        return;
+    }
+    
+    if (!taskDateInput || !taskDateInput.value) {
+        alert("⚠️ 날짜를 선택해주세요.");
+        return;
+    }
+
+    const tasks = tasksText
         .split("\n")
         .map(t => t.trim())
         .filter(t => t !== "")
-        .map(t => ({
-            content: t,
-        }));
+        .map(t => ({ content: t }));
 
-    await fetch(`${API}/daily-logs/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            student_id: selectedStudent.id,
-            date: logDate.value,
-            tasks: tasks,
-            teacher_note: teacherNote.value
-        })
-    });
+    if (tasks.length === 0) {
+        alert("⚠️ 할 일을 입력해주세요.");
+        return;
+    }
 
-    loadDailyLogs();
+    const selectedDate = taskDateInput.value;
+
+    try {
+        // 해당 날짜의 일지 조회
+        const logsRes = await fetch(`${API}/daily-logs/student/${selectedStudent.id}`);
+        const logs = await logsRes.json();
+        const existingLog = logs.find(log => log.date === selectedDate);
+
+        // 일지가 있으면 할 일 추가, 없으면 새로 생성
+        // 백엔드에서 일지가 이미 있으면 할 일만 추가하도록 수정됨
+        const response = await fetch(`${API}/daily-logs/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                student_id: selectedStudent.id,
+                date: selectedDate,
+                tasks: tasks,
+                teacher_note: "", // 할 일만 추가할 때는 빈 문자열
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
+
+        taskInput.value = "";
+        loadTasksForDate(); // 선택된 날짜의 할 일 다시 로드
+        alert("할 일이 추가되었습니다!");
+    } catch (error) {
+        console.error("할 일 추가 오류:", error);
+        alert("할 일 추가 중 오류가 발생했습니다: " + error.message);
+    }
 }
 
+// =========================
+// 날짜별 일지 로드
+// =========================
+async function loadLogForDate() {
+    if (!selectedStudent) return;
+    
+    const logDate = document.getElementById("logDate").value;
+    if (!logDate) return;
+
+    try {
+        // 해당 날짜의 일지 조회
+        const res = await fetch(`${API}/daily-logs/student/${selectedStudent.id}`);
+        const logs = await res.json();
+        const targetLog = logs.find(log => log.date === logDate);
+
+        // 할 일 목록 표시
+        const logTasksList = document.getElementById("logTasksList");
+        if (targetLog && targetLog.tasks && targetLog.tasks.length > 0) {
+            logTasksList.innerHTML = targetLog.tasks.map(task => `
+                <div class="task-item" style="margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        ${task.grading_done ? '<span style="color: var(--secondary-color);">✓ 채점</span>' : ''}
+                        ${task.review_done ? '<span style="color: var(--primary-color);">✓ 오답</span>' : ''}
+                        ${task.is_done ? '<strong style="color: var(--secondary-color);">✅ 완료</strong>' : '<span style="color: var(--text-secondary);">⏳ 진행중</span>'}
+                    </div>
+                    <div style="color: var(--text-primary);">${task.content}</div>
+                </div>
+            `).join("");
+        } else {
+            logTasksList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">할 일이 없습니다</p>';
+        }
+
+        // 출석 현황 자동 불러오기
+        const attendanceRes = await fetch(`${API}/attendance/student/${selectedStudent.id}`);
+        const attendanceRecords = await attendanceRes.json();
+        const dateAttendance = attendanceRecords.find(r => r.date === logDate);
+        
+        if (dateAttendance) {
+            // 출석 상태 매핑
+            let attendanceStatus = "";
+            if (dateAttendance.status === "present") {
+                attendanceStatus = "출석";
+            } else if (dateAttendance.status === "absent") {
+                attendanceStatus = "결석";
+            }
+            document.getElementById("logAttendanceStatus").value = attendanceStatus;
+            document.getElementById("logAttendanceStatus").disabled = false;
+        } else {
+            document.getElementById("logAttendanceStatus").value = "";
+            document.getElementById("logAttendanceStatus").disabled = false;
+        }
+
+        // 일지 내용 불러오기
+        if (targetLog) {
+            document.getElementById("teacherNote").value = targetLog.teacher_note || "";
+            document.getElementById("absenceReason").value = targetLog.absence_reason || "";
+            document.getElementById("followUpAction").value = targetLog.follow_up_action || "";
+            document.getElementById("makeupClassNote").value = targetLog.makeup_class_note || "";
+            document.getElementById("examResult").value = targetLog.exam_result || "";
+        } else {
+            // 일지가 없으면 필드 초기화
+            document.getElementById("teacherNote").value = "";
+            document.getElementById("absenceReason").value = "";
+            document.getElementById("followUpAction").value = "";
+            document.getElementById("makeupClassNote").value = "";
+            document.getElementById("examResult").value = "";
+        }
+    } catch (error) {
+        console.error("일지 로드 실패:", error);
+    }
+}
+
+// =========================
+// 일지 생성/업데이트
+// =========================
+async function createDailyLog() {
+    if (!selectedStudent) {
+        alert("⚠️ 학생을 먼저 선택해주세요.");
+        return;
+    }
+    
+    const logDate = document.getElementById("logDate").value;
+    if (!logDate) {
+        alert("⚠️ 날짜를 선택해주세요.");
+        return;
+    }
+
+    try {
+        // 해당 날짜의 할 일 가져오기
+        const logsRes = await fetch(`${API}/daily-logs/student/${selectedStudent.id}`);
+        const logs = await logsRes.json();
+        const existingLog = logs.find(log => log.date === logDate);
+        
+        // 기존 할 일 유지 (할 일 관리 탭에서 추가한 할 일들)
+        const existingTasks = existingLog && existingLog.tasks ? existingLog.tasks.map(t => ({ content: t.content })) : [];
+
+        const response = await fetch(`${API}/daily-logs/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                student_id: selectedStudent.id,
+                date: logDate,
+                tasks: existingTasks, // 기존 할 일 유지
+                teacher_note: document.getElementById("teacherNote").value,
+                attendance_status: document.getElementById("logAttendanceStatus").value,
+                absence_reason: document.getElementById("absenceReason").value,
+                follow_up_action: document.getElementById("followUpAction").value,
+                makeup_class_note: document.getElementById("makeupClassNote").value,
+                exam_result: document.getElementById("examResult").value,
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            if (errorText.includes("이미 오늘 일지가 있음") || errorText.includes("이미 해당 날짜의 일지")) {
+                alert("⚠️ 이미 해당 날짜의 일지가 있습니다.\n일지는 수정할 수 없습니다. (백엔드 제한)");
+                return;
+            }
+            throw new Error(errorText);
+        }
+
+        alert("일지가 저장되었습니다!");
+        loadDailyLogs();
+        loadTasksForDate(); // 할 일 목록 업데이트
+        loadLogForDate(); // 현재 선택된 날짜의 일지 다시 로드
+    } catch (error) {
+        console.error("일지 저장 오류:", error);
+        alert("일지 저장 중 오류가 발생했습니다: " + error.message);
+    }
+}
 
 // =========================
 // 일지 조회
 // =========================
 async function loadDailyLogs() {
-    const res = await fetch(
-        `${API}/daily-logs/student/${selectedStudent.id}`
-    );
+    if (!selectedStudent) return;
+    
+    const res = await fetch(`${API}/daily-logs/student/${selectedStudent.id}`);
     const logs = await res.json();
     const list = document.getElementById("logList");
     list.innerHTML = "";
 
+    if (logs.length === 0) {
+        list.innerHTML = '<li class="empty-state">작성된 일지가 없습니다</li>';
+        return;
+    }
+
     logs.forEach(log => {
         const li = document.createElement("li");
+        li.className = "log-item";
 
         const tasksHtml = log.tasks.map(t => `
-            <li>
-                <label>
-                    <input
-                        type="checkbox"
-                        ${t.grading_done ? "checked" : ""}
-                        onchange="updateTask(${t.id}, 'grading_done', this.checked)"
-                    />
-                    채점
-                </label>
-
-                <label style="margin-left:10px;">
-                    <input
-                        type="checkbox"
-                        ${t.review_done ? "checked" : ""}
-                        onchange="updateTask(${t.id}, 'review_done', this.checked)"
-                    />
-                    오답
-                </label>
-
-                <strong style="margin-left:10px;">
-                    ${t.is_done ? "✅ 완료" : ""}
-                </strong>
-
-                <br/>
-                ${t.content}
-            </li>
+            <div class="task-item">
+                <div class="checkbox-group">
+                    <label>
+                        <input
+                            type="checkbox"
+                            ${t.grading_done ? "checked" : ""}
+                            onchange="updateTask(${t.id}, 'grading_done', this.checked)"
+                        />
+                        채점
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            ${t.review_done ? "checked" : ""}
+                            onchange="updateTask(${t.id}, 'review_done', this.checked)"
+                        />
+                        오답
+                    </label>
+                    ${t.is_done ? '<strong style="color: var(--secondary-color);">✅ 완료</strong>' : ''}
+                </div>
+                <div class="task-content">${t.content}</div>
+            </div>
         `).join("");
 
+        const memoHtml = log.teacher_note ? `<p style="margin: 0.75rem 0; padding: 0.75rem; background: white; border-radius: 6px;"><strong>메모:</strong> ${log.teacher_note}</p>` : '';
+        const attendanceHtml = log.attendance_status ? `<p style="margin: 0.5rem 0; color: var(--text-secondary);"><strong>출결:</strong> ${log.attendance_status}</p>` : '';
+        
         li.innerHTML = `
-            <strong>${log.date}</strong>
-            <ul>${tasksHtml}</ul>
-            메모: ${log.teacher_note || ""}
-
-            <br/><br/>
-            <button onclick="shareKakao(${log.id})">
+            <div class="log-date">${log.date}</div>
+            ${attendanceHtml}
+            ${tasksHtml}
+            ${memoHtml}
+            <button class="btn-secondary" onclick="shareKakao(${log.id})" style="margin-top: 0.75rem; width: 100%;">
               📤 학부모에게 공유
             </button>
         `;
@@ -390,17 +2283,132 @@ async function loadDailyLogs() {
     });
 }
 
-
 async function updateTask(taskId, field, value) {
-    await fetch(`${API}/daily-tasks/${taskId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            [field]: value
-        })
-    });
+    try {
+        await fetch(`${API}/daily-tasks/${taskId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                [field]: value
+            })
+        });
 
-    loadDailyLogs();
+        // 할 일 목록과 일지 목록 모두 업데이트
+        loadTasksForDate(); // 현재 선택된 날짜의 할 일 목록 업데이트
+        loadDailyLogs();
+        
+        // 일지 관리 탭에서 날짜가 선택되어 있으면 해당 날짜의 일지도 업데이트
+        const logDate = document.getElementById("logDate").value;
+        if (logDate) {
+            loadLogForDate();
+        }
+    } catch (error) {
+        console.error("할 일 업데이트 실패:", error);
+        alert("할 일 업데이트 중 오류가 발생했습니다.");
+    }
+}
+
+// =========================
+// 할 일 수정
+// =========================
+function editTask(taskId, currentContent) {
+    const contentDiv = document.getElementById(`task-content-${taskId}`);
+    if (!contentDiv) return;
+    
+    const currentText = currentContent || contentDiv.textContent;
+    
+    // 인라인 편집 모드로 전환
+    contentDiv.innerHTML = `
+        <input type="text" id="edit-task-input-${taskId}" value="${currentText.replace(/"/g, '&quot;')}" 
+               style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;" />
+        <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem;">
+            <button onclick="saveTaskEdit(${taskId})" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">저장</button>
+            <button onclick="cancelTaskEdit(${taskId}, '${currentText.replace(/'/g, "\\'")}')" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background: var(--text-secondary); color: white; border: none; border-radius: 4px; cursor: pointer;">취소</button>
+        </div>
+    `;
+    
+    // 입력 필드에 포커스
+    const input = document.getElementById(`edit-task-input-${taskId}`);
+    if (input) {
+        input.focus();
+        input.select();
+    }
+}
+
+async function saveTaskEdit(taskId) {
+    const input = document.getElementById(`edit-task-input-${taskId}`);
+    if (!input) return;
+    
+    const newContent = input.value.trim();
+    if (!newContent) {
+        alert("할 일 내용을 입력해주세요.");
+        return;
+    }
+    
+    try {
+        await fetch(`${API}/daily-tasks/${taskId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: newContent
+            })
+        });
+        
+        // 할 일 목록 다시 로드
+        loadTasksForDate();
+        loadDailyLogs();
+        
+        // 일지 관리 탭에서 날짜가 선택되어 있으면 해당 날짜의 일지도 업데이트
+        const logDate = document.getElementById("logDate").value;
+        if (logDate) {
+            loadLogForDate();
+        }
+    } catch (error) {
+        console.error("할 일 수정 실패:", error);
+        alert("할 일 수정 중 오류가 발생했습니다.");
+    }
+}
+
+function cancelTaskEdit(taskId, originalContent) {
+    const contentDiv = document.getElementById(`task-content-${taskId}`);
+    if (!contentDiv) return;
+    
+    contentDiv.textContent = originalContent;
+}
+
+// =========================
+// 할 일 삭제
+// =========================
+async function deleteTask(taskId) {
+    if (!confirm("이 할 일을 삭제하시겠습니까?")) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API}/daily-tasks/${taskId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        });
+        
+        if (!response.ok) {
+            throw new Error("삭제 실패");
+        }
+        
+        // 할 일 목록 다시 로드
+        loadTasksForDate();
+        loadDailyLogs();
+        
+        // 일지 관리 탭에서 날짜가 선택되어 있으면 해당 날짜의 일지도 업데이트
+        const logDate = document.getElementById("logDate").value;
+        if (logDate) {
+            loadLogForDate();
+        }
+        
+        alert("할 일이 삭제되었습니다.");
+    } catch (error) {
+        console.error("할 일 삭제 실패:", error);
+        alert("할 일 삭제 중 오류가 발생했습니다.");
+    }
 }
 
 // =========================
@@ -413,21 +2421,21 @@ async function loadAbsentStudents() {
     const data = await res.json();
 
     absentStudents = data;
-
     const list = document.getElementById("absentList");
     list.innerHTML = "";
 
     if (data.length === 0) {
-        list.innerHTML = "<li>🎉 모두 출석 완료</li>";
+        list.innerHTML = '<li class="empty-state">🎉 오늘 모두 출석 완료!</li>';
         return;
     }
 
     data.forEach(s => {
         const li = document.createElement("li");
+        li.className = "attendance-item late-or-absent";
         li.innerHTML = `
-            <label>
-                <input type="checkbox" data-id="${s.student_id}" />
-                ${s.name}
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem; width: 100%;">
+                <input type="checkbox" data-id="${s.student_id}" style="width: auto; margin: 0;" />
+                <strong>${s.name}</strong>
             </label>
         `;
         list.appendChild(li);
@@ -445,31 +2453,25 @@ function sendSelectedSMS() {
     }
 
     const names = [];
-
     checked.forEach(cb => {
         const student = absentStudents.find(
             s => s.student_id == cb.dataset.id
         );
         if (student) {
             names.push(student.name);
-            console.log(
-                `[문자 발송] ${student.name} 학부모에게 문자 전송`
-            );
         }
     });
 
-    alert(
-        `문자 발송 완료 (임시)\n\n대상:\n- ${names.join("\n- ")}`
-    );
+    alert(`문자 발송 완료 (임시)\n\n대상:\n- ${names.join("\n- ")}`);
 }
 
 // =========================
 // 요일별 등원 시간 저장
-// =========================S
+// =========================
 async function loadStudentSchedules() {
-    const res = await fetch(
-        `${API}/students/${selectedStudent.id}/schedules/`
-    );
+    if (!selectedStudent) return;
+    
+    const res = await fetch(`${API}/students/${selectedStudent.id}/schedules/`);
     const schedules = await res.json();
 
     const map = {};
@@ -482,120 +2484,644 @@ async function loadStudentSchedules() {
 
     WEEKDAYS.forEach(d => {
         const li = document.createElement("li");
+        li.className = "schedule-item";
 
         li.innerHTML = `
-            <label>
-                ${d.label}요일
-                <input
-                    type="time"
-                    value="${map[d.value] || ""}"
-                    onchange="saveSchedule(${d.value}, this.value)"
-                />
-            </label>
+            <label>${d.label}요일</label>
+            <input
+                type="time"
+                value="${map[d.value] || ""}"
+                onchange="saveSchedule(${d.value}, this.value)"
+                placeholder="시간 선택"
+            />
         `;
 
         list.appendChild(li);
     });
 }
 
-
-// 저장
 async function saveSchedule(weekday, time) {
     if (!time || !selectedStudent) return;
 
-    await fetch(
-        `${API}/students/${selectedStudent.id}/schedules/`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                weekday: weekday,
-                expected_time: time
-            })
-        }
-    );
+    const response = await fetch(`${API}/students/${selectedStudent.id}/schedules/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            weekday: weekday,
+            expected_time: time
+        })
+    });
+    
+    if (response.ok) {
+        // 등원 시간 저장 후 출석 정보 업데이트
+        await loadStudentAttendance();
+        await loadAttendanceToday();
+        await loadAttendanceOverview();
+    }
 }
-
 
 let currentShareUrl = null;
 
 async function shareKakao(logId) {
-    // 1️⃣ 최신 일지 다시 불러오기 (중요!!)
-    await loadDailyLogs();
+    try {
+        // 일지 새로고침 (최신 데이터 반영)
+        if (selectedStudent) {
+            await loadDailyLogs();
+        }
 
-    // 2️⃣ 이미지 생성 요청
-    const res = await fetch(
-        `${API}/daily-logs/${logId}/image`,
-        { method: "POST" }
-    );
-    const data = await res.json();
+        // 이미지 생성 요청
+        const res = await fetch(`${API}/daily-logs/${logId}/image`, {
+            method: "POST"
+        });
+        
+        if (!res.ok) {
+            throw new Error(`이미지 생성 실패: ${res.status}`);
+        }
+        
+        const data = await res.json();
 
-    // 3️⃣ 이미지 표시
-    const BASE = "https://autotoxic-dorathy-noncharitably.ngrok-free.dev";
-    currentShareUrl = `${BASE}${data.image_url}?t=${Date.now()}`;
+        // 이미지 URL 생성 (API 서버의 이미지 파일 엔드포인트 사용)
+        // 백엔드에서 반환된 image_url은 "/static/reports/log_1.png" 형식
+        // 이를 API 서버 URL과 결합하거나 직접 이미지 파일 엔드포인트 사용
+        if (data.image_url) {
+            // image_url이 상대 경로인 경우 API 서버와 결합
+            if (data.image_url.startsWith('/')) {
+                currentShareUrl = `${API}${data.image_url}?t=${Date.now()}`;
+            } else {
+                currentShareUrl = `${API}/${data.image_url}?t=${Date.now()}`;
+            }
+        } else {
+            // image_url이 없으면 이미지 파일 엔드포인트 직접 사용
+            currentShareUrl = `${API}/daily-logs/${logId}/image-file?t=${Date.now()}`;
+        }
 
-    document.getElementById("shareImage").src = currentShareUrl;
-    document.getElementById("shareModal").classList.remove("hidden");
+        document.getElementById("shareImage").src = currentShareUrl;
+        document.getElementById("shareModal").classList.remove("hidden");
+        
+        // 이미지 로드 에러 처리
+        document.getElementById("shareImage").onerror = function() {
+            alert("이미지를 불러올 수 없습니다. 이미지가 생성되었는지 확인해주세요.");
+        };
+    } catch (error) {
+        console.error("이미지 공유 오류:", error);
+        alert("이미지 생성 중 오류가 발생했습니다: " + error.message);
+    }
 }
-
 
 function closeShareModal() {
     document.getElementById("shareModal").classList.add("hidden");
 }
 
+// 초기 실행은 initializeApp()에서 처리
 
-
-async function copyImageToClipboard() {
-    if (!currentShareUrl) {
-        alert("이미지가 없습니다.");
-        return;
-    }
-
-    try {
-        // 1️⃣ 이미지 fetch
-        const res = await fetch(currentShareUrl);
-        const blob = await res.blob();
-
-        // 2️⃣ ClipboardItem 생성
-        const item = new ClipboardItem({
-            [blob.type]: blob
-        });
-
-        // 3️⃣ 클립보드에 이미지 쓰기
-        await navigator.clipboard.write([item]);
-
-        alert("🖼️ 이미지가 복사되었습니다!\n카카오톡에 Ctrl+V 하세요.");
-    } catch (err) {
-        console.error(err);
-        alert(
-            "이미지 복사 실패 😢\n\n" +
-            "⚠️ 크롬/엣지에서만 가능하고\n" +
-            "⚠️ HTTPS(ngrok) 환경이어야 합니다."
-        );
+// 초기 로드: 오늘 날짜의 일지 정보 불러오기 (학생 선택 후)
+function loadInitialLogData() {
+    if (selectedStudent) {
+        loadLogForDate();
     }
 }
 
+// =========================
+// 상담 관리 관련
+// =========================
+let allConsultations = [];
+let currentCalendarDate = new Date();
+let selectedConsultationDate = null;
 
-// 초기 실행
-loadStudents();
+// 상담 목록 로드
+async function loadConsultations() {
+    try {
+        const res = await fetch(`${API}/consultations/`);
+        allConsultations = await res.json();
+        renderCalendar();
+        // 전체 상담 목록을 날짜 오름차순으로 표시
+        renderConsultationList();
+    } catch (error) {
+        console.error("상담 목록 로드 실패:", error);
+    }
+}
+
+// 캘린더 렌더링
+function renderCalendar() {
+    const calendarDiv = document.getElementById("consultationCalendar");
+    const monthTitle = document.getElementById("calendarMonth");
+    
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    
+    monthTitle.textContent = `${year}년 ${month + 1}월`;
+    
+    // 해당 월의 첫 날과 마지막 날
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const firstDayOfWeek = firstDay.getDay(); // 0=일요일
+    const daysInMonth = lastDay.getDate();
+    
+    // 이전 달의 마지막 날들
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    
+    // 요일 헤더 행
+    let calendarHTML = `
+        <div class="calendar-header">일</div>
+        <div class="calendar-header">월</div>
+        <div class="calendar-header">화</div>
+        <div class="calendar-header">수</div>
+        <div class="calendar-header">목</div>
+        <div class="calendar-header">금</div>
+        <div class="calendar-header">토</div>
+    `;
+    
+    // 이전 달의 날들 (첫 주의 앞부분)
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const day = prevMonthLastDay - i;
+        const prevMonth = month === 0 ? 11 : month - 1;
+        const prevYear = month === 0 ? year - 1 : year;
+        const dateStr = `${prevYear}-${String(prevMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        calendarHTML += `<div class="calendar-day other-month" onclick="selectDate('${dateStr}')">${day}</div>`;
+    }
+    
+    // 현재 달의 날들
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = date.getTime() === today.getTime();
+        const isSelected = selectedConsultationDate === dateStr;
+        
+        // 해당 날짜의 상담 목록
+        const dayConsultations = allConsultations.filter(c => c.date === dateStr);
+        
+        let dayClass = "calendar-day";
+        if (isToday) dayClass += " today";
+        if (isSelected) dayClass += " selected";
+        
+        // 상담 목록 HTML 생성 (학생 이름으로 표시)
+        let consultationsHTML = '';
+        if (dayConsultations.length > 0) {
+            consultationsHTML = dayConsultations.map(c => {
+                const name = c.student_name || '학생';
+                return `<div class="calendar-day-events" title="${name} 상담">${name} 상담</div>`;
+            }).join('');
+        }
+        
+        calendarHTML += `
+            <div class="${dayClass}" onclick="selectDate('${dateStr}')">
+                <div class="calendar-day-number">${day}</div>
+                ${consultationsHTML}
+            </div>
+        `;
+    }
+    
+    // 다음 달의 날들 (마지막 주의 뒷부분 - 총 6주 = 42개 셀로 고정)
+    const totalCells = 42; // 6주 * 7일
+    const usedCells = firstDayOfWeek + daysInMonth;
+    const nextMonthDays = Math.max(0, totalCells - usedCells);
+    
+    for (let day = 1; day <= nextMonthDays; day++) {
+        const nextMonth = month + 1;
+        const nextYear = month === 11 ? year + 1 : year;
+        const dateStr = `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        calendarHTML += `<div class="calendar-day other-month" onclick="selectDate('${dateStr}')">${day}</div>`;
+    }
+    
+    calendarDiv.innerHTML = calendarHTML;
+}
+
+// 월 변경
+function changeMonth(delta) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+    renderCalendar();
+}
+
+// 날짜 선택
+function selectDate(dateStr) {
+    selectedConsultationDate = dateStr;
+    renderCalendar();
+    // 선택한 날짜의 상담 목록 표시
+    renderConsultationListForDate(dateStr);
+}
+
+// 특정 날짜의 상담 목록 렌더링
+function renderConsultationListForDate(dateStr) {
+    const list = document.getElementById("consultationList");
+    const title = document.getElementById("selectedDateTitle");
+    
+    const date = new Date(dateStr);
+    const dateDisplay = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+    title.textContent = `📋 ${dateDisplay} 상담 목록`;
+    
+    list.innerHTML = "";
+    
+    // 해당 날짜의 모든 상담 (상태 무관)
+    const dateConsultations = allConsultations.filter(c => c.date === dateStr);
+    
+    // 시간 오름차순 정렬
+    const sortedConsultations = [...dateConsultations].sort((a, b) => {
+        const timeA = a.time || '00:00';
+        const timeB = b.time || '00:00';
+        return timeA.localeCompare(timeB);
+    });
+    
+    // 상담 추가 버튼
+    const addButton = document.createElement('button');
+    addButton.className = 'btn-primary';
+    addButton.style.cssText = 'width: 100%; margin-bottom: 1rem; padding: 0.5rem;';
+    addButton.textContent = `➕ ${dateDisplay} 상담 추가`;
+    addButton.onclick = () => {
+        selectedConsultationDate = dateStr;
+        openConsultationModal();
+    };
+    list.appendChild(addButton);
+    
+    if (sortedConsultations.length === 0) {
+        const emptyLi = document.createElement('li');
+        emptyLi.className = 'empty-state';
+        emptyLi.textContent = '해당 날짜의 상담이 없습니다';
+        list.appendChild(emptyLi);
+        return;
+    }
+    
+    
+    // 날짜의 상담 목록 렌더링
+    sortedConsultations.forEach(consultation => {
+        const li = document.createElement("li");
+        li.className = `consultation-item ${consultation.status}`;
+        
+        let statusText = '';
+        let statusColor = '';
+        if (consultation.status === 'scheduled') {
+            statusText = '예정';
+            statusColor = 'var(--primary-color)';
+        } else if (consultation.status === 'completed') {
+            statusText = '완료';
+            statusColor = 'var(--secondary-color)';
+        } else if (consultation.status === 'cancelled') {
+            statusText = '취소';
+            statusColor = 'var(--danger-color)';
+        }
+        
+        const date = new Date(consultation.date);
+        const dateStr = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+        
+        li.innerHTML = `
+            <div style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.375rem;">
+                    <div style="flex: 1; min-width: 0;">
+                        <strong style="font-size: 0.875rem;">${consultation.student_name}</strong> 
+                        <span style="font-size: 0.75rem; color: var(--text-secondary);">(${consultation.student_grade})</span>
+                        ${consultation.parent_name ? `<div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.125rem;">${consultation.parent_name}</div>` : ''}
+                    </div>
+                    <span style="font-size: 0.7rem; color: ${statusColor}; font-weight: 600; white-space: nowrap; margin-left: 0.5rem;">${statusText}</span>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.375rem;">
+                    ${dateStr} ${consultation.time}
+                </div>
+                ${consultation.content ? `<div style="margin-bottom: 0.375rem; padding: 0.375rem; background: white; border-radius: 4px; font-size: 0.75rem; line-height: 1.4; word-break: break-word;">${consultation.content}</div>` : ''}
+                ${consultation.notes ? `<div style="padding: 0.375rem; background: #f9fafb; border-radius: 4px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.375rem; word-break: break-word;">📝 ${consultation.notes}</div>` : ''}
+                <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    ${consultation.status !== 'completed' ? `<button onclick="completeConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--secondary-color); color: white; border: none; border-radius: 3px; cursor: pointer;">완료</button>` : ''}
+                    <button onclick="editConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--primary-color); color: white; border: none; border-radius: 3px; cursor: pointer;">수정</button>
+                    <button onclick="deleteConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--danger-color); color: white; border: none; border-radius: 3px; cursor: pointer;">삭제</button>
+                </div>
+            </div>
+        `;
+        list.appendChild(li);
+    });
+}
+
+// 예정 상담 목록 렌더링 (날짜 오름차순)
+function renderConsultationList() {
+    const list = document.getElementById("consultationList");
+    const title = document.getElementById("selectedDateTitle");
+    
+    title.textContent = `📋 예정 상담 목록`;
+    
+    list.innerHTML = "";
+    
+    // 예정 상태인 상담만 필터링
+    const scheduledConsultations = allConsultations.filter(c => c.status === 'scheduled');
+    
+    // 날짜 오름차순 정렬
+    const sortedConsultations = [...scheduledConsultations].sort((a, b) => {
+        const dateA = new Date(a.date + 'T' + a.time);
+        const dateB = new Date(b.date + 'T' + b.time);
+        return dateA - dateB;
+    });
+    
+    if (sortedConsultations.length === 0) {
+        list.innerHTML = '<li class="empty-state">예정된 상담이 없습니다</li>';
+        return;
+    }
+    
+    sortedConsultations.forEach(consultation => {
+        const li = document.createElement("li");
+        li.className = `consultation-item ${consultation.status}`;
+        
+        let statusText = '';
+        let statusColor = '';
+        if (consultation.status === 'scheduled') {
+            statusText = '예정';
+            statusColor = 'var(--primary-color)';
+        } else if (consultation.status === 'completed') {
+            statusText = '완료';
+            statusColor = 'var(--secondary-color)';
+        } else if (consultation.status === 'cancelled') {
+            statusText = '취소';
+            statusColor = 'var(--danger-color)';
+        }
+        
+        const date = new Date(consultation.date);
+        const dateStr = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+        
+        li.innerHTML = `
+            <div style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.375rem;">
+                    <div style="flex: 1; min-width: 0;">
+                        <strong style="font-size: 0.875rem;">${consultation.student_name}</strong> 
+                        <span style="font-size: 0.75rem; color: var(--text-secondary);">(${consultation.student_grade})</span>
+                        ${consultation.parent_name ? `<div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.125rem;">${consultation.parent_name}</div>` : ''}
+                    </div>
+                    <span style="font-size: 0.7rem; color: ${statusColor}; font-weight: 600; white-space: nowrap; margin-left: 0.5rem;">${statusText}</span>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.375rem;">
+                    ${dateStr} ${consultation.time}
+                </div>
+                ${consultation.content ? `<div style="margin-bottom: 0.375rem; padding: 0.375rem; background: white; border-radius: 4px; font-size: 0.75rem; line-height: 1.4; word-break: break-word;">${consultation.content}</div>` : ''}
+                ${consultation.notes ? `<div style="padding: 0.375rem; background: #f9fafb; border-radius: 4px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.375rem; word-break: break-word;">📝 ${consultation.notes}</div>` : ''}
+                <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    ${consultation.status !== 'completed' ? `<button onclick="completeConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--secondary-color); color: white; border: none; border-radius: 3px; cursor: pointer;">완료</button>` : ''}
+                    <button onclick="editConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--primary-color); color: white; border: none; border-radius: 3px; cursor: pointer;">수정</button>
+                    <button onclick="deleteConsultation(${consultation.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--danger-color); color: white; border: none; border-radius: 3px; cursor: pointer;">삭제</button>
+                </div>
+            </div>
+        `;
+        list.appendChild(li);
+    });
+    
+    // 전체 보기에서는 selectedConsultationDate 초기화
+    selectedConsultationDate = null;
+}
+
+// 상담 등록 모달 열기
+function openConsultationModal(consultationId = null) {
+    const modal = document.getElementById("consultationModal");
+    modal.classList.remove("hidden");
+    
+    if (consultationId) {
+        // 수정 모드
+        loadConsultationForEdit(consultationId);
+    } else {
+        // 등록 모드
+        document.getElementById("consultationFormTitle").textContent = "➕ 상담 등록";
+        document.getElementById("consultationForm").reset();
+        document.getElementById("consultationForm").dataset.mode = "create";
+        delete document.getElementById("consultationForm").dataset.consultationId;
+        document.getElementById("consultationStudentName").value = "";
+        document.getElementById("consultationStudentGrade").value = "";
+        if (selectedConsultationDate) {
+            document.getElementById("consultationDate").value = selectedConsultationDate;
+        } else {
+            document.getElementById("consultationDate").value = new Date().toISOString().slice(0, 10);
+        }
+        document.getElementById("consultationTime").value = "14:00";
+    }
+}
+
+// 상담 등록 모달 닫기
+function closeConsultationModal() {
+    document.getElementById("consultationModal").classList.add("hidden");
+}
+
+// 상담 등록/수정
+async function saveConsultation() {
+    const form = document.getElementById("consultationForm");
+    const mode = form.dataset.mode;
+    const consultationId = form.dataset.consultationId;
+    
+    const studentName = document.getElementById("consultationStudentName").value.trim();
+    const studentGrade = document.getElementById("consultationStudentGrade").value.trim();
+    const date = document.getElementById("consultationDate").value;
+    const time = document.getElementById("consultationTime").value;
+    const parentName = document.getElementById("consultationParentName").value.trim();
+    const content = document.getElementById("consultationContent").value.trim();
+    const notes = document.getElementById("consultationNotes").value.trim();
+    const status = document.getElementById("consultationStatus").value;
+    
+    if (!studentName || !studentGrade || !date || !time) {
+        alert("학생 이름, 학년, 날짜, 시간을 모두 입력해주세요.");
+        return;
+    }
+    
+    try {
+        const url = mode === "edit" 
+            ? `${API}/consultations/${consultationId}`
+            : `${API}/consultations/`;
+        const method = mode === "edit" ? "PUT" : "POST";
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                student_name: studentName,
+                student_grade: studentGrade,
+                date: date,
+                time: time,
+                parent_name: parentName || null,
+                content: content || null,
+                notes: notes || null,
+                status: status || "scheduled"
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("상담 저장 실패 응답:", errorText);
+            throw new Error(errorText || "상담 저장 실패");
+        }
+        
+        closeConsultationModal();
+        loadConsultations();
+        // 저장 후 날짜가 선택되어 있으면 해당 날짜의 상담 목록 표시
+        if (selectedConsultationDate) {
+            renderConsultationListForDate(selectedConsultationDate);
+        } else {
+            renderConsultationList();
+        }
+        renderCalendar();
+        alert("상담이 저장되었습니다!");
+    } catch (error) {
+        console.error("상담 저장 실패:", error);
+        const errorMessage = error.message || "상담 저장 중 오류가 발생했습니다.";
+        alert(`상담 저장 중 오류가 발생했습니다.\n\n오류 내용: ${errorMessage}`);
+    }
+}
+
+// 상담 수정을 위한 데이터 로드
+async function loadConsultationForEdit(consultationId) {
+    try {
+        const res = await fetch(`${API}/consultations/${consultationId}`);
+        const consultation = await res.json();
+        
+        document.getElementById("consultationFormTitle").textContent = "✏️ 상담 수정";
+        document.getElementById("consultationForm").dataset.mode = "edit";
+        document.getElementById("consultationForm").dataset.consultationId = consultationId;
+        document.getElementById("consultationStudentName").value = consultation.student_name || "";
+        document.getElementById("consultationStudentGrade").value = consultation.student_grade || "";
+        document.getElementById("consultationDate").value = consultation.date;
+        document.getElementById("consultationTime").value = consultation.time;
+        document.getElementById("consultationParentName").value = consultation.parent_name || "";
+        document.getElementById("consultationContent").value = consultation.content || "";
+        document.getElementById("consultationNotes").value = consultation.notes || "";
+        document.getElementById("consultationStatus").value = consultation.status;
+    } catch (error) {
+        console.error("상담 로드 실패:", error);
+        alert("상담 정보를 불러오는 중 오류가 발생했습니다.");
+    }
+}
+
+// 상담 수정 (편의 함수)
+function editConsultation(consultationId) {
+    openConsultationModal(consultationId);
+}
+
+// 상담 완료 처리
+async function completeConsultation(consultationId) {
+    try {
+        const response = await fetch(`${API}/consultations/${consultationId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: "completed"
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error("완료 처리 실패");
+        }
+        
+        loadConsultations();
+        // 완료 후 날짜가 선택되어 있으면 해당 날짜의 상담 목록 표시
+        if (selectedConsultationDate) {
+            renderConsultationListForDate(selectedConsultationDate);
+        } else {
+            renderConsultationList();
+        }
+        renderCalendar();
+        alert("상담이 완료 처리되었습니다.");
+    } catch (error) {
+        console.error("상담 완료 처리 실패:", error);
+        alert("상담 완료 처리 중 오류가 발생했습니다.");
+    }
+}
+
+// 상담 삭제
+async function deleteConsultation(consultationId) {
+    if (!confirm("이 상담을 삭제하시겠습니까?")) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API}/consultations/${consultationId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        });
+        
+        if (!response.ok) {
+            throw new Error("삭제 실패");
+        }
+        
+        loadConsultations();
+        // 삭제 후 날짜가 선택되어 있으면 해당 날짜의 상담 목록 표시
+        if (selectedConsultationDate) {
+            renderConsultationListForDate(selectedConsultationDate);
+        } else {
+            renderConsultationList();
+        }
+        renderCalendar();
+        alert("상담이 삭제되었습니다.");
+    } catch (error) {
+        console.error("상담 삭제 실패:", error);
+        alert("상담 삭제 중 오류가 발생했습니다.");
+    }
+}
 </script>
 
+<!-- 👩‍🎓 학생 등록 모달 -->
+<div id="studentRegisterModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeStudentRegisterModal()">×</span>
+        <h3>👩‍🎓 학생 등록</h3>
+        <form onsubmit="event.preventDefault(); createStudent();">
+            <label>이름 *</label>
+            <input id="modalStudentName" type="text" placeholder="이름을 입력하세요" required />
+            
+            <label>학년 *</label>
+            <input id="modalStudentGrade" type="text" placeholder="예: 중2, 고1" required />
+            
+            <label>부모님 연락처 (선택사항)</label>
+            <input id="modalParentPhone" type="tel" placeholder="010-1234-5678" />
+            
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">등록하기</button>
+        </form>
+    </div>
+</div>
 
 <!-- 📤 학부모 공유 모달 -->
 <div id="shareModal" class="modal hidden">
-  <div class="modal-content">
-    <span class="close" onclick="closeShareModal()">×</span>
+    <div class="modal-content">
+        <span class="close" onclick="closeShareModal()">×</span>
+        <h3>📤 학부모에게 보내기</h3>
+        <div style="flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
+            <img id="shareImage" class="share-image" />
+        </div>
+        <p class="hint" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); flex-shrink: 0;">
+            🖱️ 이미지에서 <b>마우스 오른쪽 클릭 → "이미지 복사"</b><br/>
+            카카오톡 대화창에 바로 붙여넣기 하세요
+        </p>
+    </div>
+</div>
 
-    <h3>📤 학부모에게 보내기</h3>
-
-    <img id="shareImage" class="share-image" />
-
-    <p class="hint">
-      🖱️ 이미지에서 <b>마우스 오른쪽 클릭 → “이미지 복사”</b><br/>
-    카카오톡 대화창에 바로 붙여넣기 하세요
-    </p>
-  </div>
+<!-- 💬 상담 등록/수정 모달 -->
+<div id="consultationModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeConsultationModal()">×</span>
+        <h3 id="consultationFormTitle">➕ 상담 등록</h3>
+        <form id="consultationForm" onsubmit="event.preventDefault(); saveConsultation();">
+            <label>학생 이름 *</label>
+            <input id="consultationStudentName" type="text" placeholder="학생 이름을 입력하세요" required />
+            
+            <label>학년 *</label>
+            <input id="consultationStudentGrade" type="text" placeholder="예: 중2, 고1" required />
+            
+            <label>날짜 *</label>
+            <input id="consultationDate" type="date" required />
+            
+            <label>시간 *</label>
+            <input id="consultationTime" type="time" required />
+            
+            <label>학부모 이름</label>
+            <input id="consultationParentName" type="text" placeholder="학부모 이름" />
+            
+            <label>상담 내용</label>
+            <textarea id="consultationContent" placeholder="상담 내용을 입력하세요" rows="4"></textarea>
+            
+            <label>메모</label>
+            <textarea id="consultationNotes" placeholder="추가 메모" rows="3"></textarea>
+            
+            <label>상태</label>
+            <select id="consultationStatus">
+                <option value="scheduled">예정</option>
+                <option value="completed">완료</option>
+                <option value="cancelled">취소</option>
+            </select>
+            
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">저장</button>
+        </form>
+    </div>
 </div>
 
 </body>
 </html>
+
