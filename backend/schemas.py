@@ -140,6 +140,17 @@ class DailyLogCreate(BaseModel):
     # 시험 결과 요약
     
 
+class DailyTaskResponse(DailyTaskCreate):
+    id: int
+    content: str
+    grading_done: bool
+    review_done: bool
+    is_done: bool
+
+    class Config:
+        from_attributes = True
+
+
 class DailyLogResponse(BaseModel):
     id: int
     student_id: int
@@ -162,17 +173,6 @@ class DailyLogResponse(BaseModel):
     # 보강 메모 (날짜/시간 자유 텍스트)
 
     exam_result: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-
-class DailyTaskResponse(DailyTaskCreate):
-    id: int
-    content: str
-    grading_done: bool
-    review_done: bool
-    is_done: bool
 
     class Config:
         from_attributes = True
